@@ -1,5 +1,6 @@
 package com.dai.dai.configuration.swagger;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.info.Info;
@@ -13,7 +14,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("MoviePlay API")
-                        .version("1.0.0")
+                        .version("1.0.3")
                         .description("La API MoviePlay ofrece servicios para la gestión de películas y usuarios," +
                                 " permitiendo a los usuarios acceder a información detallada, buscar, filtrar," +
                                 " calificar y marcar películas como favoritas. Desplegada en la nube con " +
