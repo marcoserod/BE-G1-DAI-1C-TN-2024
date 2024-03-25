@@ -3,6 +3,8 @@ package com.dai.dai.client.movie.impl;
 import com.dai.dai.client.movie.MovieDbClient;
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.dto.Movies;
+import com.dai.dai.exception.DaiException;
+import com.dai.dai.exception.handler.DaiExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,38 +27,56 @@ public class MovieDbClientImpl implements MovieDbClient {
     String accesToken;
     Movies movieListApiExt = new Movies();
     ObjectMapper objectMapper = new ObjectMapper();
-    List<Movie> movieListReturned = new ArrayList<Movie>();
+
 
 
     @Override
     public List<Movie> getPopularMovies() throws IOException, InterruptedException {
-        log.info("[MovieDbClient] init");
+        log.info("[MovieDbClient] getPopularMovies init");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
+        return this.sendMovieRequest(request);
+    }
 
+    @Override
+    public List<Movie> getNowPlaying() throws IOException, InterruptedException {
+        log.info("[MovieDbClient] getNowPlaying init");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+        return this.sendMovieRequest(request);
+    }
+
+    private List<Movie> sendMovieRequest(HttpRequest request) throws IOException, InterruptedException {
+        List<Movie> movieListReturned;
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
-
-        movieListReturned = movieListApiExt.getResults().stream()
-                .map(oneMovie -> {
-                    Movie movie = new Movie();
-                    movie.setId(oneMovie.getId());
-                    movie.setTitle(oneMovie.getTitle());
-                    movie.setOriginal_title(oneMovie.getOriginal_title());
-                    movie.setPoster_path(oneMovie.getPoster_path());
-                    movie.setOverview(oneMovie.getOverview());
-                    movie.setRelease_date(oneMovie.getRelease_date());
-                    movie.setVote_average(oneMovie.getVote_average());
-                    movie.setVote_count(oneMovie.getVote_count());
-                    return movie;
-                })
-                .collect(Collectors.toList());
-
-        return movieListReturned;
+       try {
+           movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
+           movieListReturned = movieListApiExt.getResults().stream()
+                    .map(oneMovie -> {
+                        Movie movie = new Movie();
+                        movie.setId(oneMovie.getId());
+                        movie.setTitle(oneMovie.getTitle());
+                        movie.setOriginal_title(oneMovie.getOriginal_title());
+                        movie.setPoster_path(oneMovie.getPoster_path());
+                        movie.setOverview(oneMovie.getOverview());
+                        movie.setRelease_date(oneMovie.getRelease_date());
+                        movie.setVote_average(oneMovie.getVote_average());
+                        movie.setVote_count(oneMovie.getVote_count());
+                        return movie;
+                    })
+                    .collect(Collectors.toList());
+            return movieListReturned;
+        } catch (Exception e) {
+            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+        }
 
     }
 }

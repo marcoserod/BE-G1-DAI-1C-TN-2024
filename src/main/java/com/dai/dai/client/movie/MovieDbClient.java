@@ -8,4 +8,6 @@ import java.util.List;
 public interface MovieDbClient {
 
     List<Movie> getPopularMovies() throws IOException, InterruptedException;
+
+    List<Movie> getNowPlaying() throws IOException, InterruptedException;
 }
