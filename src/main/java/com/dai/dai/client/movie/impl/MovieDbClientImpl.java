@@ -39,7 +39,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
-        return this.sendMovieRequest(request);
+        return this.getMovieListRequest(request);
     }
 
     @Override
@@ -51,10 +51,30 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
-        return this.sendMovieRequest(request);
+        return this.getMovieListRequest(request);
     }
 
-    private List<Movie> sendMovieRequest(HttpRequest request) throws IOException, InterruptedException {
+    @Override
+    public Movie getMovieById(Integer movieId) throws IOException, InterruptedException {
+        log.info("[MovieDbClient] getMovieById. Id: {}", movieId);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        Movie movie = new Movie();
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            movie = objectMapper.readValue(response.body(), Movie.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+        }
+        return movie;
+    }
+
+    private List<Movie> getMovieListRequest(HttpRequest request) throws IOException, InterruptedException {
         List<Movie> movieListReturned;
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
        try {

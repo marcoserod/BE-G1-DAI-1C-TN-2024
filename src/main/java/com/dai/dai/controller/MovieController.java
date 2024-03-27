@@ -1,16 +1,15 @@
 package com.dai.dai.controller;
 
 
-import com.dai.dai.client.movie.dto.Movie;
-import com.dai.dai.dto.movie.MoviesResponseDto;
+import com.dai.dai.dto.movie.GetMovieDetailsResponse;
+import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
-import java.util.List;
 
 public interface MovieController {
 
-    ResponseEntity<MoviesResponseDto> getPopularMovies() throws IOException, InterruptedException;
-    ResponseEntity<MoviesResponseDto> getNowPlayingMovies() throws IOException, InterruptedException;
+    ResponseEntity<GetMoviesResponseDto> getPopularMovies() throws IOException, InterruptedException;
+    ResponseEntity<GetMoviesResponseDto> getNowPlayingMovies() throws IOException, InterruptedException;
+    ResponseEntity<GetMovieDetailsResponse> getMovieById(Integer movieId) throws IOException, InterruptedException;
 }

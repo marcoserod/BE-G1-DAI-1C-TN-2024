@@ -2,7 +2,8 @@ package com.dai.dai.controller.impl;
 
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.controller.MovieController;
-import com.dai.dai.dto.movie.MoviesResponseDto;
+import com.dai.dai.dto.movie.GetMovieDetailsResponse;
+import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,7 +44,7 @@ public class MovieControllerImpl implements MovieController {
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/popular")
     @Override
-    public ResponseEntity<MoviesResponseDto> getPopularMovies() throws IOException, InterruptedException {
+    public ResponseEntity<GetMoviesResponseDto> getPopularMovies() throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getPopularMovies(), HttpStatus.OK);
     }
 
@@ -56,7 +58,21 @@ public class MovieControllerImpl implements MovieController {
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/now_playing")
     @Override
-    public ResponseEntity<MoviesResponseDto> getNowPlayingMovies() throws IOException, InterruptedException {
+    public ResponseEntity<GetMoviesResponseDto> getNowPlayingMovies() throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getNowPlayingMovies(), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Retorna los detalles de la pelicula solicitada.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = GetMovieDetailsResponse.class)) }),
+            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+                    content = @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class))) })
+    @GetMapping("/details/{movie_id}")
+    @Override
+    public ResponseEntity<GetMovieDetailsResponse> getMovieById(@PathVariable(value = "movie_id" ) Integer movieId) throws IOException, InterruptedException {
+        return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
     }
 }

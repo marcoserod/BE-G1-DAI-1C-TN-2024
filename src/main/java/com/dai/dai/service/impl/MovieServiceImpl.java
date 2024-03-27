@@ -1,16 +1,14 @@
 package com.dai.dai.service.impl;
 
 
-import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
-import com.dai.dai.dto.movie.MoviesResponseDto;
-import com.dai.dai.exception.DaiException;
+import com.dai.dai.dto.movie.GetMovieDetailsResponse;
+import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import com.dai.dai.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 
 
 @Slf4j
@@ -24,22 +22,32 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public MoviesResponseDto getPopularMovies() throws IOException, InterruptedException {
+    public GetMoviesResponseDto getPopularMovies() throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getPopularMovies() .");
         var response = movieDbClient.getPopularMovies();
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
-        return MoviesResponseDto.builder()
+        return GetMoviesResponseDto.builder()
                 .movies(response)
                 .build();
     }
 
     @Override
-    public MoviesResponseDto getNowPlayingMovies() throws IOException, InterruptedException {
+    public GetMoviesResponseDto getNowPlayingMovies() throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getNowPlayingMovies() .");
         var response = movieDbClient.getNowPlaying();
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
-        return MoviesResponseDto.builder()
+        return GetMoviesResponseDto.builder()
                 .movies(response)
+                .build();
+    }
+
+    @Override
+    public GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
+        log.info("[MovieService] Comienza la ejecución del metodo getMovieById(). Id: {}.",movieId);
+        var response = movieDbClient.getMovieById(movieId);
+        log.info("[MovieService] Se recupera el detalle de la pelicula {} correctamente.", response.getTitle());
+        return GetMovieDetailsResponse.builder()
+                .movie(response)
                 .build();
     }
 }
