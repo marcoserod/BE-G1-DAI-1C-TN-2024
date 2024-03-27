@@ -14,7 +14,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("MoviePlay API")
-                        .version("1.0.4")
+                        .version("1.1.0")
                         .description("La API MoviePlay ofrece servicios para la gestión de películas y usuarios," +
                                 " permitiendo a los usuarios acceder a información detallada, buscar, filtrar," +
                                 " calificar y marcar películas como favoritas. Desplegada en la nube con " +

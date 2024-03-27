@@ -45,21 +45,78 @@ mvn spring-boot:run
 
 
 ## Configuración
-### Base de datos
+### Base de datos - Mysql
+1. Descargar e instalar el servidor de base de datos: MySQL.
 
-La aplicación utiliza una base de datos para almacenar información sobre películas y usuarios. Sigue estos pasos para configurar la base de datos:
+     ```
+     Link: https://dev.mysql.com/downloads/mysql/
+     ```
 
-1. **Configuración del archivo application.properties:**
+2. Abrir el CMD e ir a la ubicación de la carpeta /bin *(creada con la instalación del server.)* con el siguiente comando:
 
-   Abre el archivo `application.properties` en la carpeta `src/main/resources` y configura los detalles de conexión a tu base de datos. Por ejemplo:
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/moviedb
-   spring.datasource.username=tu_usuario
-   spring.datasource.password=tu_contraseña
+    ```cmd 
+    cd C:\Program Files\MySQL\MySQL Server 8.1\bin
+    ```
+
+3. Paso 4: Inicia el servidor MySQL.
+
+    ```
+    mysqld
+    ```
+4. Una vez que el servidor MySQL esté levantado, resta conectarse usando el cliente MySQL con el siguiente comando. (En la consola mysql)
+    ```
+    mysql -u root -p
+    ```
+   Se va a aparecer el siguiente mensaje:
+    ```
+    Enter password:
+    ```
+   Esto te pedirá la contraseña del usuario root de MySQL. Ingrésala y presiona Enter.
+
+   ***A esta altura ya estamos interactuando directamente con la Linea e comando de la base de datos.***
+5. Verificar bases de datos existentes:
+   ```sql
+   mysql> SHOW DATABASES;
    ```
-2. **Creación de la base de datos:**
+6. Vamos a crear la bbdd "DAIDB":
+   ```sql
+   mysql> CREATE DATABASE DAIDB;
+   ```
+7. Luego, selecciona la base de datos "DAIDB" con el siguiente comando:
+   ```sql
+   mysql> USE DAIDB;
+   ```
+8. Ahora estás listo para crear la tabla "Usuarios". Correr el siguiente script en la misma linea de comandos:
 
-   Crea una base de datos en tu sistema de gestión de bases de datos utilizando el nombre especificado en la propiedad `spring.datasource.url`.
+   ```sql
+   mysql> CREATE TABLE usuarios (
+               id VARCHAR(36) PRIMARY KEY,
+               uuid BINARY(16),
+               email VARCHAR(255),
+               nombre VARCHAR(255),
+               apellido VARCHAR(255),
+               nickname VARCHAR(255),
+               imagen_perfil VARCHAR(255)
+            );
+   ```
+9. Luego, creamos la tabla "favoritos_usuario":
+
+   ```sql
+   mysql> CREATE TABLE favoritos_usuario (
+               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+               usuario_id VARCHAR(36),
+               FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+               id_pelicula BIGINT
+            );
+   ```
+
+10. Vamos a validar que se hayan creado correctamente con el comando:
+
+    ```sql
+    mysql> SHOW TABLES;
+    ```
+
+
 
 ## Documentación
 ### Api swagger

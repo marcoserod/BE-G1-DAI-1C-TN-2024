@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +73,7 @@ public class MovieControllerImpl implements MovieController {
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/details/{movie_id}")
     @Override
-    public ResponseEntity<GetMovieDetailsResponse> getMovieById(@PathVariable(value = "movie_id" ) Integer movieId) throws IOException, InterruptedException {
+    public ResponseEntity<GetMovieDetailsResponse> getMovieById(@Valid @PathVariable(value = "movie_id" ) Integer movieId) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
     }
 }
