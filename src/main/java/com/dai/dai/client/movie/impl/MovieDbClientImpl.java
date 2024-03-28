@@ -2,9 +2,9 @@ package com.dai.dai.client.movie.impl;
 
 import com.dai.dai.client.movie.MovieDbClient;
 import com.dai.dai.client.movie.dto.Movie;
+import com.dai.dai.client.movie.dto.MovieTrailer;
 import com.dai.dai.client.movie.dto.Movies;
-import com.dai.dai.exception.DaiException;
-import com.dai.dai.exception.handler.DaiExceptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,5 +97,38 @@ public class MovieDbClientImpl implements MovieDbClient {
             throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
         }
 
+    }
+
+    @Override
+    public MovieTrailer getMovieTrailerById(Integer movieId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/" + movieId + "/videos"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer " + accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        var movieVideo = new MovieTrailer();
+
+        try {
+            var objectMapper = new ObjectMapper();
+            var jsonResponse = objectMapper.readTree(response.body());
+            var resultsNode = jsonResponse.get("results");
+            if (resultsNode.isArray() && resultsNode.size() > 0) {
+                for (JsonNode result : resultsNode) {
+                    if (result.get("type").asText().equals("Trailer") &&
+                            result.get("site").asText().equals("YouTube")) {
+                        var link = "https://www.youtube.com/watch?v=" + result.get("key").asText();
+                        movieVideo.setLink(link);
+                        return movieVideo;
+                    }
+                }
+            }
+            throw new RuntimeException("No se encontraron trailers para la película con ID: " + movieId);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.", e);
+        }
     }
 }
