@@ -2,6 +2,7 @@ package com.dai.dai.service.impl;
 
 
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
+import com.dai.dai.dto.movie.GetAvailableMovieGenresResponse;
 import com.dai.dai.dto.movie.GetMovieDetailsResponse;
 import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import com.dai.dai.service.MovieService;
@@ -48,6 +49,18 @@ public class MovieServiceImpl implements MovieService {
         log.info("[MovieService] Se recupera el detalle de la pelicula {} correctamente.", response.getTitle());
         return GetMovieDetailsResponse.builder()
                 .movie(response)
+                .build();
+    }
+
+    @Override
+    public GetAvailableMovieGenresResponse getAvailableMovieGenres() throws IOException, InterruptedException {
+        log.info("[MovieService] Comienza la ejecución del metodo getAvailableMovieGenres().");
+        var response = movieDbClient.getAvailableMovieGenres();
+        log.info("[MovieService] Se recuperan la lista de los generos. Cantidad de generos obtenidos; {}.", response.size());
+
+
+        return GetAvailableMovieGenresResponse.builder()
+                .genreList(response)
                 .build();
     }
 }

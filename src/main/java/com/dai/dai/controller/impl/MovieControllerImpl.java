@@ -2,6 +2,7 @@ package com.dai.dai.controller.impl;
 
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.controller.MovieController;
+import com.dai.dai.dto.movie.GetAvailableMovieGenresResponse;
 import com.dai.dai.dto.movie.GetMovieDetailsResponse;
 import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import com.dai.dai.exception.DaiException;
@@ -15,7 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,5 +78,19 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetMovieDetailsResponse> getMovieById(@Valid @PathVariable(value = "movie_id" ) Integer movieId) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Retorna los generos de pelicula disponibles.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = GetAvailableMovieGenresResponse.class)) }),
+            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+                    content = @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class))) })
+    @GetMapping("/genre/list")
+    @Override
+    public ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres() throws IOException, InterruptedException {
+        return new ResponseEntity<>(movieService.getAvailableMovieGenres() ,HttpStatus.OK);
     }
 }

@@ -1,6 +1,8 @@
 package com.dai.dai.client.movie.impl;
 
 import com.dai.dai.client.movie.MovieDbClient;
+import com.dai.dai.client.movie.dto.Genre;
+import com.dai.dai.client.movie.dto.GenresResponse;
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.dto.Movies;
 import com.dai.dai.exception.DaiException;
@@ -74,10 +76,34 @@ public class MovieDbClientImpl implements MovieDbClient {
         return movie;
     }
 
+    @Override
+    public List<Genre> getAvailableMovieGenres() throws IOException, InterruptedException {
+        log.info("[MovieDbClient] getAvailableMovieGenres.");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/genre/movie/list?language=en"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        List<Genre> res;
+        GenresResponse genresResponse = new GenresResponse();
+        try {
+            genresResponse = objectMapper.readValue(response.body(), GenresResponse.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+        }
+        if (!genresResponse.getGenres().isEmpty()){
+            return genresResponse.getGenres();
+        } else {
+            throw new RuntimeException("Ocurrió un error al recuperar los generos solicitados.");
+        }
+    }
+
     private List<Movie> getMovieListRequest(HttpRequest request) throws IOException, InterruptedException {
         List<Movie> movieListReturned;
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-       try {
+        try {
            movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
            movieListReturned = movieListApiExt.getResults().stream()
                     .map(oneMovie -> {
