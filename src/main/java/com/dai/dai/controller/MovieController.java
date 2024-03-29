@@ -3,6 +3,7 @@ package com.dai.dai.controller;
 
 import com.dai.dai.dto.movie.GetAvailableMovieGenresResponse;
 import com.dai.dai.dto.movie.GetMovieDetailsResponse;
+import com.dai.dai.dto.movie.GetMovieTrailerDetailsResponse;
 import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import org.springframework.http.ResponseEntity;
 
@@ -14,5 +15,5 @@ public interface MovieController {
     ResponseEntity<GetMoviesResponseDto> getNowPlayingMovies() throws IOException, InterruptedException;
     ResponseEntity<GetMovieDetailsResponse> getMovieById(Integer movieId) throws IOException, InterruptedException;
     ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres() throws IOException, InterruptedException;
-
+    ResponseEntity<GetMovieTrailerDetailsResponse> getMovieTrailerById(Integer movieId) throws IOException, InterruptedException;
 }

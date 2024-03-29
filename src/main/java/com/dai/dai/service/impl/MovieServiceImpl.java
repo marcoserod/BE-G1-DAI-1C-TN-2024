@@ -1,9 +1,11 @@
 package com.dai.dai.service.impl;
 
 
+import com.dai.dai.client.movie.dto.MovieTrailer;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.GetAvailableMovieGenresResponse;
 import com.dai.dai.dto.movie.GetMovieDetailsResponse;
+import com.dai.dai.dto.movie.GetMovieTrailerDetailsResponse;
 import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import com.dai.dai.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,15 @@ public class MovieServiceImpl implements MovieService {
 
         return GetAvailableMovieGenresResponse.builder()
                 .genreList(response)
+                .build();
+    }
+
+    @Override
+    public GetMovieTrailerDetailsResponse getMovieTrailerById(Integer movieId) throws IOException, InterruptedException {
+        log.info("[MovieService] Comienza la ejecución del método getMovieTrailerById(). Id: {}.", movieId);
+        var response = movieDbClient.getMovieTrailerById(movieId);
+        return GetMovieTrailerDetailsResponse.builder()
+                .movieTrailer(response)
                 .build();
     }
 }

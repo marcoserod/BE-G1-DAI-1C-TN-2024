@@ -4,6 +4,7 @@ import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.controller.MovieController;
 import com.dai.dai.dto.movie.GetAvailableMovieGenresResponse;
 import com.dai.dai.dto.movie.GetMovieDetailsResponse;
+import com.dai.dai.dto.movie.GetMovieTrailerDetailsResponse;
 import com.dai.dai.dto.movie.GetMoviesResponseDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.MovieService;
@@ -92,5 +93,20 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres() throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getAvailableMovieGenres() ,HttpStatus.OK);
+    }
+
+    @Operation(summary = "Retorna el trailer de la película solicitada.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = GetMovieTrailerDetailsResponse.class)) }),
+            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+                    content = @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class))) })
+    @GetMapping("/trailer/{movie_id}")
+    @Override
+    public ResponseEntity<GetMovieTrailerDetailsResponse> getMovieTrailerById
+    (@Valid @PathVariable(value = "movie_id") Integer movieId) throws IOException, InterruptedException {
+        return new ResponseEntity<>(movieService.getMovieTrailerById(movieId), HttpStatus.OK);
     }
 }
