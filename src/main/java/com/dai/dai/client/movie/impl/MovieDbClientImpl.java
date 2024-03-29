@@ -1,11 +1,8 @@
 package com.dai.dai.client.movie.impl;
 
 import com.dai.dai.client.movie.MovieDbClient;
-import com.dai.dai.client.movie.dto.Genre;
-import com.dai.dai.client.movie.dto.GenresResponse;
-import com.dai.dai.client.movie.dto.Movie;
-import com.dai.dai.client.movie.dto.MovieTrailer;
-import com.dai.dai.client.movie.dto.Movies;
+import com.dai.dai.client.movie.dto.*;
+import com.dai.dai.exception.TmdbNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +64,10 @@ public class MovieDbClientImpl implements MovieDbClient {
 
         Movie movie = new Movie();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404){
+            log.error("No pudimos encontrar la pelicula de id: {}",movieId);
+            throw new TmdbNotFoundException("No pudimos encontrar la pelicula de id: "+movieId);
+        }
         try {
             movie = objectMapper.readValue(response.body(), Movie.class);
         } catch (Exception e) {
@@ -135,26 +136,52 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .build();
 
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404){
+            log.error("No pudimos encontrar el cast asociado a la pelicula de id: {}",movieId);
+            throw new TmdbNotFoundException("No pudimos recuperar el cast de id: "+movieId);
+        }
         var movieVideo = new MovieTrailer();
-
+        JsonNode resultsNode;
         try {
-            var objectMapper = new ObjectMapper();
             var jsonResponse = objectMapper.readTree(response.body());
-            var resultsNode = jsonResponse.get("results");
-            if (resultsNode.isArray() && resultsNode.size() > 0) {
-                for (JsonNode result : resultsNode) {
-                    if (result.get("type").asText().equals("Trailer") &&
-                            result.get("site").asText().equals("YouTube")) {
-                        var link = "https://www.youtube.com/watch?v=" + result.get("key").asText();
-                        movieVideo.setLink(link);
-                        return movieVideo;
-                    }
-                }
-            }
-            throw new RuntimeException("No se encontraron trailers para la película con ID: " + movieId);
-
+            resultsNode = jsonResponse.get("results");
         } catch (Exception e) {
             throw new RuntimeException("Ocurrió un error al consultar TMDB Api.", e);
+        }
+        if (resultsNode.isArray() && resultsNode.size() > 0) {
+            for (JsonNode result : resultsNode) {
+                if (result.get("type").asText().equals("Trailer") &&
+                        result.get("site").asText().equals("YouTube")) {
+                    var link = "https://www.youtube.com/watch?v=" + result.get("key").asText();
+                    movieVideo.setLink(link);
+                }
+            }
+        } else {
+            throw new TmdbNotFoundException("No se encontraron trailers para la película con ID: " + movieId);
+        }
+        return movieVideo;
+    }
+
+    @Override
+    public MovieCast getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"/credits?language=en-US"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404){
+            log.error("No pudimos encontrar el cast asociado a la pelicula de id: {}",movieId);
+            throw new TmdbNotFoundException("No pudimos recuperar el cast de id: "+movieId);
+        }
+        MovieCast movieCast;
+        try {
+            movieCast = objectMapper.readValue(response.body(), MovieCast.class);
+            return movieCast;
+        } catch (Exception e) {
+            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
         }
     }
 }

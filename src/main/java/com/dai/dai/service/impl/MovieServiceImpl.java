@@ -1,12 +1,8 @@
 package com.dai.dai.service.impl;
 
 
-import com.dai.dai.client.movie.dto.MovieTrailer;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
-import com.dai.dai.dto.movie.GetAvailableMovieGenresResponse;
-import com.dai.dai.dto.movie.GetMovieDetailsResponse;
-import com.dai.dai.dto.movie.GetMovieTrailerDetailsResponse;
-import com.dai.dai.dto.movie.GetMoviesResponseDto;
+import com.dai.dai.dto.movie.*;
 import com.dai.dai.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,21 +21,21 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMoviesResponseDto getPopularMovies() throws IOException, InterruptedException {
+    public GetMoviesResponse getPopularMovies() throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getPopularMovies() .");
         var response = movieDbClient.getPopularMovies();
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
-        return GetMoviesResponseDto.builder()
+        return GetMoviesResponse.builder()
                 .movies(response)
                 .build();
     }
 
     @Override
-    public GetMoviesResponseDto getNowPlayingMovies() throws IOException, InterruptedException {
+    public GetMoviesResponse getNowPlayingMovies() throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getNowPlayingMovies() .");
         var response = movieDbClient.getNowPlaying();
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
-        return GetMoviesResponseDto.builder()
+        return GetMoviesResponse.builder()
                 .movies(response)
                 .build();
     }
@@ -72,6 +68,15 @@ public class MovieServiceImpl implements MovieService {
         var response = movieDbClient.getMovieTrailerById(movieId);
         return GetMovieTrailerDetailsResponse.builder()
                 .movieTrailer(response)
+                .build();
+    }
+
+    @Override
+    public GetMovieCastResponse getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException {
+        log.info("[MovieService] Comienza la ejecución del método getMovieCastByMovieId(). Id: {}.", movieId);
+        var response = movieDbClient.getMovieCastByMovieId(movieId);
+        return GetMovieCastResponse.builder()
+                .movieCast(response)
                 .build();
     }
 }

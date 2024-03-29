@@ -1,6 +1,7 @@
 package com.dai.dai.exception.handler;
 
 import com.dai.dai.exception.DaiException;
+import com.dai.dai.exception.TmdbNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,17 @@ public class DaiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = TmdbNotFoundException.class)
+    protected ResponseEntity<DaiException> handlTmdbNotFoundExceptionException(TmdbNotFoundException exception){
+        log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
+
+        var ex = DaiException.builder()
+                .message(exception.getMessage())
+                .build();
+
+        return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(value = { Exception.class })
     protected ResponseEntity<DaiException> handleGenericException(Exception exception){
         log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
@@ -44,11 +56,4 @@ public class DaiExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
-
-
-
-
-
 }

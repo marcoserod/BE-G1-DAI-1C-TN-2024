@@ -12,6 +12,6 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Genre {
-    String id;
-    String name;
+    private String id;
+    private String name;
 }

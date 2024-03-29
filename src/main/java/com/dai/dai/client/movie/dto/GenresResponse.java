@@ -9,5 +9,5 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenresResponse {
-    List<Genre> genres;
+    private List<Genre> genres;
 }
