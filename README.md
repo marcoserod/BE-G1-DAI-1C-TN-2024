@@ -73,7 +73,7 @@ mvn spring-boot:run
     ```
    Esto te pedirá la contraseña del usuario root de MySQL. Ingrésala y presiona Enter.
 
-   ***A esta altura ya estamos interactuando directamente con la Linea e comando de la base de datos.***
+   ***A esta altura ya estamos interactuando directamente con la Linea de comandos de la base de datos.***
 5. Verificar bases de datos existentes:
    ```sql
    mysql> SHOW DATABASES;
@@ -89,24 +89,23 @@ mvn spring-boot:run
 8. Ahora estás listo para crear la tabla "Usuarios". Correr el siguiente script en la misma linea de comandos:
 
    ```sql
-   mysql> CREATE TABLE usuarios (
-               id VARCHAR(36) PRIMARY KEY,
-               uuid BINARY(16),
+   mysql> CREATE TABLE users (
+               id INT AUTO_INCREMENT PRIMARY KEY,
                email VARCHAR(255),
-               nombre VARCHAR(255),
-               apellido VARCHAR(255),
+               name VARCHAR(255),
+               surname VARCHAR(255),
                nickname VARCHAR(255),
-               imagen_perfil VARCHAR(255)
+               profile_image VARCHAR(255)
             );
    ```
-9. Luego, creamos la tabla "favoritos_usuario":
+9. Luego, creamos la tabla "user_favorites":
 
    ```sql
-   mysql> CREATE TABLE favoritos_usuario (
+   mysql> CREATE TABLE user_favorites (
                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-               usuario_id VARCHAR(36),
-               FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-               id_pelicula BIGINT
+               user_id INT,
+               FOREIGN KEY (user_id) REFERENCES users(id),
+               film_id BIGINT
             );
    ```
 
@@ -115,8 +114,6 @@ mvn spring-boot:run
     ```sql
     mysql> SHOW TABLES;
     ```
-
-
 
 ## Documentación
 ### Api swagger

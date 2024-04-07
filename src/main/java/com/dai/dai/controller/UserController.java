@@ -5,4 +5,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserController {
     ResponseEntity<UserDto> getUserInfoById(Integer userID);
+
+    ResponseEntity<UserDto> createUser(UserDto userDto);
 }
