@@ -14,6 +14,6 @@ import java.util.List;
 @Builder
 public class GetAvailableMovieGenresResponse {
 
-    @Schema(description = "Lista de los generos disponibles.")
+    @Schema(description = "List of available genres")
     List<Genre> genreList;
 }
