@@ -26,20 +26,19 @@ import java.io.IOException;
 
 @AllArgsConstructor
 @RestController
-@Tag(name = "Movie Controller", description = "Endpoints para operaciones relacionadas con TMDB Api.")
+@Tag(name = "Movie Controller", description = "Endpoints for operations related to TMDB API")
 @RequestMapping("/movies")
 public class MovieControllerImpl implements MovieController {
 
     MovieService movieService;
 
 
-    @Operation(summary = "Retorna una lista de películas populares, permitiendo a los usuarios acceder fácilmente a" +
-            " contenido de tendencia.")
+    @Operation(summary = "It returns a list of popular movies, allowing users to easily access trending content")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+            @ApiResponse(responseCode = "200", description = "Operation successful",
                     content = { @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = Movie.class)))}),
-            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/popular")
@@ -48,12 +47,12 @@ public class MovieControllerImpl implements MovieController {
         return new ResponseEntity<>(movieService.getPopularMovies(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Retorna una lista de Peliculas que estan actualmente en los cines.")
+    @Operation(summary = "It returns a list of movies currently in theaters")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+            @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = Movie.class)))}),
-            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/now_playing")
@@ -62,15 +61,15 @@ public class MovieControllerImpl implements MovieController {
         return new ResponseEntity<>(movieService.getNowPlayingMovies(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Retorna los detalles de la pelicula solicitada.")
+    @Operation(summary = "It returns the details of the requested movie")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+            @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetMovieDetailsResponse.class)) }),
-            @ApiResponse(responseCode = "404", description = "No se encontró la pelicula solicitada.",
+            @ApiResponse(responseCode = "404", description = "The requested movie was not found",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/details/{movie_id}")
@@ -79,12 +78,12 @@ public class MovieControllerImpl implements MovieController {
         return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Retorna los generos de pelicula disponibles.")
+    @Operation(summary = "It returns the available movie genres")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+            @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetAvailableMovieGenresResponse.class)) }),
-            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/genre/list")
@@ -93,15 +92,15 @@ public class MovieControllerImpl implements MovieController {
         return new ResponseEntity<>(movieService.getAvailableMovieGenres() ,HttpStatus.OK);
     }
 
-    @Operation(summary = "Retorna el trailer de la película solicitada.")
+    @Operation(summary = "It returns the trailer of the requested movie")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+            @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetMovieTrailerDetailsResponse.class)) }),
-            @ApiResponse(responseCode = "404", description = "No se encontró el Trailer solicitado.",
+            @ApiResponse(responseCode = "404", description = "The requested trailer was not found.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/trailer/{movie_id}")
@@ -111,15 +110,15 @@ public class MovieControllerImpl implements MovieController {
         return new ResponseEntity<>(movieService.getMovieTrailerById(movieId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Retorna el reparto y los directores de la película solicitada.")
+    @Operation(summary = "It returns the cast and directors of the requested movie")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa",
+            @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetMovieTrailerDetailsResponse.class)) }),
-            @ApiResponse(responseCode = "404", description = "No se encontró el Cast solicitado.",
+            @ApiResponse(responseCode = "404", description = "The requested cast was not found",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Error interno en el servidor.",
+            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/cast/{movie_id}")

@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 @Data
 public class GetMovieDetailsResponse {
-    @Schema(description = "Detalle de la pelicula obtenida")
+    @Schema(description = "Details of the obtained movie")
     Movie movie;
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @Data
 public class GetMoviesResponse {
-    @Schema(description = "Lista de peliculas obtenidas.", type = "array")
+    @Schema(description = "List of obtained movies", type = "array")
     List<Movie> movies;
 
 }

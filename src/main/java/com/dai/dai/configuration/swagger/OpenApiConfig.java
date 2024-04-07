@@ -15,11 +15,11 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("MoviePlay API")
                         .version("1.1.3")
-                        .description("La API MoviePlay ofrece servicios para la gestión de películas y usuarios," +
-                                " permitiendo a los usuarios acceder a información detallada, buscar, filtrar," +
-                                " calificar y marcar películas como favoritas. Desplegada en la nube con " +
-                                "documentación Swagger, garantiza una experiencia fluida y escalabilidad." +
-                                " Desarrollada con Node.js/Express o Spring Boot, ofrece flexibilidad y se integra" +
-                                " perfectamente con la aplicación móvil MoviePlay."));
+                        .description("The MoviePlay API offers services for managing movies and users, allowing " +
+                                "users to access detailed information, search, filter, rate, and mark movies " +
+                                "as favorites. Deployed in the cloud with Swagger documentation, it ensures a " +
+                                "smooth experience and scalability. Developed with Spring Boot, " +
+                                "it offers flexibility and seamlessly integrates with the MoviePlay " +
+                                "mobile application"));
     }
 }
