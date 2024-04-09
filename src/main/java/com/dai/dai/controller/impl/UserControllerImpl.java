@@ -1,9 +1,9 @@
 package com.dai.dai.controller.impl;
 
 import com.dai.dai.controller.UserController;
-import com.dai.dai.dto.movie.GetMovieTrailerDetailsResponse;
 import com.dai.dai.dto.user.PostUsersResponse;
-import com.dai.dai.dto.user.UserDto;
+import com.dai.dai.dto.user.dto.UserDto;
+import com.dai.dai.dto.user.dto.UserFavoriteDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -51,5 +53,26 @@ public class UserControllerImpl implements UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
         return new ResponseEntity<>(userService.createUser(userDto), CREATED);
+    }
+
+    @Operation(summary = "Add film to user favorites")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Film added to favorite"),
+            @ApiResponse(responseCode = "400", description = "Missing parameter",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "404", description = "Movie not found",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "User not found",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
+    @PostMapping("/favorites/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addFavorite(@RequestBody UserFavoriteDto userFavoriteDto) throws IOException,
+            InterruptedException {
+        userService.addFavorite(userFavoriteDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

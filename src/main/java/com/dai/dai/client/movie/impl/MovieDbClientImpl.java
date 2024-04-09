@@ -65,13 +65,13 @@ public class MovieDbClientImpl implements MovieDbClient {
         Movie movie = new Movie();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 404){
-            log.error("No pudimos encontrar la pelicula de id: {}",movieId);
-            throw new TmdbNotFoundException("No pudimos encontrar la pelicula de id: "+movieId);
+            log.error("Couldn't find the movie with ID: {}",movieId);
+            throw new TmdbNotFoundException("Couldn't find the movie with ID: "+movieId);
         }
         try {
             movie = objectMapper.readValue(response.body(), Movie.class);
         } catch (Exception e) {
-            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+            throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
         return movie;
     }
@@ -91,12 +91,12 @@ public class MovieDbClientImpl implements MovieDbClient {
         try {
             genresResponse = objectMapper.readValue(response.body(), GenresResponse.class);
         } catch (Exception e) {
-            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+            throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
         if (!genresResponse.getGenres().isEmpty()){
             return genresResponse.getGenres();
         } else {
-            throw new RuntimeException("Ocurrió un error al recuperar los generos solicitados.");
+            throw new RuntimeException("An error occurred while retrieving the requested genres");
         }
     }
 
@@ -121,7 +121,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                     .collect(Collectors.toList());
             return movieListReturned;
         } catch (Exception e) {
-            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+            throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
 
     }
@@ -138,7 +138,7 @@ public class MovieDbClientImpl implements MovieDbClient {
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 404){
             log.error("No pudimos encontrar el cast asociado a la pelicula de id: {}",movieId);
-            throw new TmdbNotFoundException("No pudimos recuperar el cast de id: "+movieId);
+            throw new TmdbNotFoundException("Unable to retrieve the cast by ID: "+movieId);
         }
         var movieVideo = new MovieTrailer();
         JsonNode resultsNode;
@@ -146,7 +146,7 @@ public class MovieDbClientImpl implements MovieDbClient {
             var jsonResponse = objectMapper.readTree(response.body());
             resultsNode = jsonResponse.get("results");
         } catch (Exception e) {
-            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.", e);
+            throw new RuntimeException("An error occurred while consulting TMDB Api", e);
         }
         if (resultsNode.isArray() && resultsNode.size() > 0) {
             for (JsonNode result : resultsNode) {
@@ -157,7 +157,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 }
             }
         } else {
-            throw new TmdbNotFoundException("No se encontraron trailers para la película con ID: " + movieId);
+            throw new TmdbNotFoundException("No trailers were found for the movie with ID: " + movieId);
         }
         return movieVideo;
     }
@@ -174,14 +174,14 @@ public class MovieDbClientImpl implements MovieDbClient {
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 404){
             log.error("No pudimos encontrar el cast asociado a la pelicula de id: {}",movieId);
-            throw new TmdbNotFoundException("No pudimos recuperar el cast de id: "+movieId);
+            throw new TmdbNotFoundException("We couldn't retrieve the cast by ID: "+movieId);
         }
         MovieCast movieCast;
         try {
             movieCast = objectMapper.readValue(response.body(), MovieCast.class);
             return movieCast;
         } catch (Exception e) {
-            throw new RuntimeException("Ocurrió un error al consultar TMDB Api.");
+            throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
     }
 }
