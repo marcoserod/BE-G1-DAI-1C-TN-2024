@@ -1,6 +1,6 @@
 package com.dai.dai.converter.user;
 
-import com.dai.dai.dto.user.UserDto;
+import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.entity.UserEntity;
 
 public class UserConverter {
@@ -10,6 +10,7 @@ public class UserConverter {
                 .id(userEntity.getId())
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
+                .nickname(userEntity.getNickname())
                 .surname(userEntity.getSurname())
                 .profile_image(userEntity.getProfile_image())
                 .build();
