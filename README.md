@@ -125,4 +125,4 @@ using the following command
 ## Documentation
 ### Api swagger
 The Swagger documentation with the exposed API operations can be viewed at the following path:
-[ Swagger Link ](http://localhost:8080/swagger-ui/index.html "Swagger")
+[ Swagger Link ](https://app.swaggerhub.com/apis/Grupo_01/Grupo_01_DAI/1.1.5 "Swagger")
