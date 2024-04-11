@@ -16,5 +16,6 @@ public interface MovieDbClient {
     List<Genre> getAvailableMovieGenres() throws IOException, InterruptedException;
     MovieTrailer getMovieTrailerById(Integer movieId) throws IOException, InterruptedException;
     MovieCast getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException;
+    List<Movie>  getMoviesByName(String name)  throws IOException, InterruptedException;
 
 }

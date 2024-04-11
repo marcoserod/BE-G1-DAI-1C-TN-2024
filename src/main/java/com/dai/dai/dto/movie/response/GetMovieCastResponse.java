@@ -1,4 +1,4 @@
-package com.dai.dai.dto.movie;
+package com.dai.dai.dto.movie.response;
 
 import com.dai.dai.client.movie.dto.MovieCast;
 import lombok.Builder;

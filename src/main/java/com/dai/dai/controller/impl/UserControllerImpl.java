@@ -16,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -28,11 +27,24 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @Tag(name = "User Controller", description = "Endpoints for user-related operations")
 @RequestMapping("/users")
-@Validated
 public class UserControllerImpl implements UserController {
 
     UserService userService;
-
+    @Operation(summary = "Get user info for a given user id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = UserDto.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "404", description = "User not found.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
     @GetMapping("/details/{user_id}")
     @Override
     public ResponseEntity<UserDto> getUserInfoById(@Valid @PathVariable(value = "user_id" ) Integer userId) {
@@ -45,7 +57,13 @@ public class UserControllerImpl implements UserController {
             @ApiResponse(responseCode = "201", description = "User created",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = PostUsersResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "409", description = "Existing nickname",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
@@ -57,14 +75,17 @@ public class UserControllerImpl implements UserController {
 
     @Operation(summary = "Add film to user favorites")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Film added to favorite"),
-            @ApiResponse(responseCode = "400", description = "Missing parameter",
+            @ApiResponse(responseCode = "201", description = "Film added to favorites."),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "404", description = "Movie not found",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "User not found",
+            @ApiResponse(responseCode = "409", description = "User not found",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })

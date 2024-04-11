@@ -184,4 +184,19 @@ public class MovieDbClientImpl implements MovieDbClient {
             throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
     }
+
+    @Override
+    public List<Movie> getMoviesByName(String name) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=true" +
+                        "&language=en-US&page=1"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        List<Movie> res =  this.getMovieListRequest(request);
+
+        return res;
+    }
 }

@@ -1,6 +1,6 @@
 package com.dai.dai.service;
 
-import com.dai.dai.dto.movie.*;
+import com.dai.dai.dto.movie.response.*;
 
 import java.io.IOException;
 
@@ -16,5 +16,7 @@ public interface MovieService {
     GetMovieTrailerDetailsResponse getMovieTrailerById(Integer movieId) throws IOException, InterruptedException;
 
     GetMovieCastResponse getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException;
+
+    GetMoviesResponse getMoviesByName(String name) throws IOException, InterruptedException;
 
 }
