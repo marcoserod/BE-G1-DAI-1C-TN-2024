@@ -2,7 +2,7 @@ package com.dai.dai.service.impl;
 
 
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
-import com.dai.dai.dto.movie.*;
+import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -77,6 +77,19 @@ public class MovieServiceImpl implements MovieService {
         var response = movieDbClient.getMovieCastByMovieId(movieId);
         return GetMovieCastResponse.builder()
                 .movieCast(response)
+                .build();
+    }
+
+    @Override
+    public GetMoviesResponse getMoviesByName(String name) throws IOException, InterruptedException {
+        log.info("[MovieService] Comienza la ejecución del método getMoviesByName(). name: {}.", name);
+        //No permite espacios para hacer la query, por eso se cambia el espacio por un 20.
+        String nameAdapted = name.replace(" ", "%20");
+        log.info("[MovieService] Nombre adaptado: {}.", name);
+
+        var response = movieDbClient.getMoviesByName(nameAdapted);
+        return GetMoviesResponse.builder()
+                .movies(response)
                 .build();
     }
 }

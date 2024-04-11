@@ -81,11 +81,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFavorite(UserFavoriteDto userFavoriteDto) {
 
-        if (StringUtils.isEmpty(userFavoriteDto.getUser_id()) ||
-                StringUtils.isEmpty(userFavoriteDto.getFilm_id())) {
-            throw new IllegalArgumentException("All parameters are required");
-        }
-
         Optional<UserEntity> userOptional;
 
         try{
@@ -96,7 +91,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found for userId "+ userFavoriteDto.getUser_id());
+            throw new ConflictException("User not found for userId "+ userFavoriteDto.getUser_id());
         }
 
         try {

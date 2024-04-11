@@ -1,4 +1,4 @@
-package com.dai.dai.dto.movie;
+package com.dai.dai.dto.movie.response;
 
 import com.dai.dai.client.movie.dto.MovieTrailer;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -3,7 +3,6 @@ package com.dai.dai.exception.handler;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.exception.TmdbNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -63,7 +62,7 @@ public class DaiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ IllegalArgumentException.class })
     public ResponseEntity<DaiException> handleIllegalArgumentException(IllegalArgumentException exception) {
-
+        log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
         var ex = DaiException.builder()
                 .message(exception.getMessage())
                 .build();

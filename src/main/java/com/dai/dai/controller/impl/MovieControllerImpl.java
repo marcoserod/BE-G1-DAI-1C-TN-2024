@@ -2,7 +2,8 @@ package com.dai.dai.controller.impl;
 
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.controller.MovieController;
-import com.dai.dai.dto.movie.*;
+import com.dai.dai.dto.movie.request.GetMoviesByNameRequest;
+import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,11 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -66,6 +65,9 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetMovieDetailsResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "404", description = "The requested movie was not found",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
@@ -74,7 +76,8 @@ public class MovieControllerImpl implements MovieController {
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/details/{movie_id}")
     @Override
-    public ResponseEntity<GetMovieDetailsResponse> getMovieById(@Valid @PathVariable(value = "movie_id" ) Integer movieId) throws IOException, InterruptedException {
+    public ResponseEntity<GetMovieDetailsResponse> getMovieById(
+            @Valid @PathVariable(value = "movie_id" ) Integer movieId) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
     }
 
@@ -88,7 +91,8 @@ public class MovieControllerImpl implements MovieController {
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/genre/list")
     @Override
-    public ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres() throws IOException, InterruptedException {
+    public ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres()
+            throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getAvailableMovieGenres() ,HttpStatus.OK);
     }
 
@@ -97,6 +101,9 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetMovieTrailerDetailsResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "404", description = "The requested trailer was not found.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
@@ -115,6 +122,9 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = GetMovieTrailerDetailsResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "404", description = "The requested cast was not found",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
@@ -123,7 +133,30 @@ public class MovieControllerImpl implements MovieController {
                     @Schema(implementation = DaiException.class))) })
     @GetMapping("/cast/{movie_id}")
     @Override
-    public ResponseEntity<GetMovieCastResponse> getMovieCast(@Valid @PathVariable(value = "movie_id")Integer movieId) throws IOException, InterruptedException {
+    public ResponseEntity<GetMovieCastResponse> getMovieCast(@Valid @PathVariable(value = "movie_id")Integer movieId)
+            throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMovieCastByMovieId(movieId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "It returns a list of movies based on their original titles, translated titles, " +
+            "alternative titles, or cast member names..")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = GetMoviesResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "404", description = "Movies not found",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class))) })
+    @PostMapping(value = "/search", consumes = "application/json")
+    @Override
+    public ResponseEntity<GetMoviesResponse> getMoviesByName(
+            @RequestBody GetMoviesByNameRequest name) throws IOException, InterruptedException {
+        return new ResponseEntity<>(movieService.getMoviesByName(name.getName()), HttpStatus.OK);
     }
 }
