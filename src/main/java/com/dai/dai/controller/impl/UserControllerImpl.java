@@ -89,7 +89,7 @@ public class UserControllerImpl implements UserController {
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @PostMapping("/favorites/add")
+    @PostMapping("/favorites")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> addFavorite(@RequestBody UserFavoriteDto userFavoriteDto) throws IOException,
             InterruptedException {
