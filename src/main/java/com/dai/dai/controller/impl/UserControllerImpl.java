@@ -1,6 +1,7 @@
 package com.dai.dai.controller.impl;
 
 import com.dai.dai.controller.UserController;
+import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.PostUsersResponse;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.dto.user.dto.UserFavoriteDto;
@@ -30,7 +31,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class UserControllerImpl implements UserController {
 
     UserService userService;
-    @Operation(summary = "Get user info for a given user id.")
+    @Operation(summary = "Gets user info for a given user id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User found",
                     content = { @Content(mediaType = "application/json", schema =
@@ -52,7 +53,7 @@ public class UserControllerImpl implements UserController {
     }
 
 
-    @Operation(summary = "Create a new user with the data obtained from the call")
+    @Operation(summary = "Creates a new user with the data obtained from the call")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created",
                     content = { @Content(mediaType = "application/json", schema =
@@ -73,7 +74,7 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>(userService.createUser(userDto), CREATED);
     }
 
-    @Operation(summary = "Add film to user favorites")
+    @Operation(summary = "Adds film to user favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Film added to favorites."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
@@ -95,5 +96,26 @@ public class UserControllerImpl implements UserController {
             InterruptedException {
         userService.addFavorite(userFavoriteDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+    @Operation(summary = "Returns the movies in the user's favorites")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Film favorite found."),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "409", description = "User not found.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
+    @GetMapping("/favorites/{user_id}")
+    @Override
+    public ResponseEntity<GetMoviesResponse> getFavorites(
+            @Valid @PathVariable(value = "user_id" ) Integer userId) throws IOException, InterruptedException {
+        return new ResponseEntity<>(userService.getFavorites(userId), HttpStatus.OK);
     }
 }

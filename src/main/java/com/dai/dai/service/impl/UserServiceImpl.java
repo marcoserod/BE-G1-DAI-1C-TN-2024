@@ -1,12 +1,15 @@
 package com.dai.dai.service.impl;
 
+import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.converter.user.UserConverter;
+import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.dto.user.dto.UserFavoriteDto;
 import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
 import com.dai.dai.exception.handler.ConflictException;
+import com.dai.dai.repository.UserFavoriteRepository;
 import com.dai.dai.repository.UserRepository;
 import com.dai.dai.service.MovieService;
 import com.dai.dai.service.UserService;
@@ -14,6 +17,8 @@ import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +29,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
+    UserFavoriteRepository userFavoriteRepository;
     MovieService movieService;
 
     @Override
@@ -106,6 +112,37 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         } catch (Exception e) {
             throw new TmdbNotFoundException("Couldn't find the movie with ID " + userFavoriteDto.getFilm_id());
+        }
+    }
+
+    @Override
+    public GetMoviesResponse getFavorites(Integer userID) {
+        List<Movie> movies = new ArrayList<>();
+        Optional<UserEntity> userOptional;
+
+        try {
+            userOptional  = userRepository.findById(Integer.valueOf(userID));
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            throw new RuntimeException("An error occurred while querying the database");
+        }
+
+        if (userOptional.isEmpty()) {
+            throw new ConflictException("User not found for userId "+ userID);
+        }
+
+        try {
+            var listUsersFav = userFavoriteRepository.findByUserId(userID);
+            for (UserFavoriteEntity favoriteFilm : listUsersFav) {
+               var movie = movieService.getMovieById(Integer.valueOf(favoriteFilm.getFilm_id()));
+               movies.add(movie.getMovie());
+            }
+            return GetMoviesResponse.builder()
+                    .movies(movies)
+                    .build();
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            throw new RuntimeException("An error occurred while querying the database");
         }
     }
 }
