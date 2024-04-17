@@ -24,4 +24,7 @@ public interface UserController {
     ResponseEntity<Void> addFavorite(UserFavoriteDto userFavoriteDto) throws IOException, InterruptedException;
 
     ResponseEntity<GetMoviesResponse> getFavorites(Integer userId) throws IOException, InterruptedException;
+
+    ResponseEntity<Void> removeFavorite(UserFavoriteDto userFavoriteDto) throws IOException,
+            InterruptedException;
 }

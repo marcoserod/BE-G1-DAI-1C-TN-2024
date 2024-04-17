@@ -145,4 +145,44 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("An error occurred while querying the database");
         }
     }
+
+    @Override
+    public void removeFavorite(UserFavoriteDto userFavoriteDto) {
+        Optional<UserEntity> userOptional;
+
+        try {
+            userOptional = userRepository.findById(Integer.valueOf(userFavoriteDto.getUser_id()));
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            throw new RuntimeException("An error occurred while querying the database");
+        }
+
+        if (userOptional.isEmpty()) {
+            throw new ConflictException("User not found for userId "+ userFavoriteDto.getUser_id());
+        }
+
+        var userFavorites = userOptional.get().getFavorites();
+        var filmNotFound = true;
+
+        for (UserFavoriteEntity favorite : userFavorites) {
+            if (favorite.getFilm_id().equals(userFavoriteDto.getFilm_id())) {
+                filmNotFound = false;
+                break;
+            }
+        }
+
+        if (filmNotFound) {
+            throw new TmdbNotFoundException("Movie with id " + userFavoriteDto.getFilm_id() + " is not in user " +
+                    "favorites");
+        }
+
+        try {
+            userFavoriteRepository.deleteByUserIdAndFilmId(Integer.valueOf(userFavoriteDto.getUser_id()),
+                    Integer.valueOf(userFavoriteDto.getFilm_id()));
+
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            throw new RuntimeException("An error occurred while querying the database");
+        }
+    }
 }

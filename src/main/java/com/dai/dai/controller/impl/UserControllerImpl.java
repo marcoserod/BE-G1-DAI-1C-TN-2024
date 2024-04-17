@@ -99,7 +99,7 @@ public class UserControllerImpl implements UserController {
     }
 
 
-    @Operation(summary = "Returns the movies in the user's favorites")
+    @Operation(summary = "Returns the movies from the user favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Film favorite found."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
@@ -117,5 +117,29 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity<GetMoviesResponse> getFavorites(
             @Valid @PathVariable(value = "user_id" ) Integer userId) throws IOException, InterruptedException {
         return new ResponseEntity<>(userService.getFavorites(userId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Removes a movie from the user favorites")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Film favorite removed."),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "404", description = "Movie is not in favorites",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "409", description = "User not found.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
+    @DeleteMapping("/favorites")
+    @Override
+    public ResponseEntity<Void> removeFavorite(@RequestBody UserFavoriteDto userFavoriteDto) throws IOException,
+            InterruptedException {
+        userService.removeFavorite(userFavoriteDto);
+        return ResponseEntity.noContent().build();
     }
 }
