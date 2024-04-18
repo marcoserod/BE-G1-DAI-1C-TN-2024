@@ -27,4 +27,6 @@ public interface UserController {
 
     ResponseEntity<Void> removeFavorite(UserFavoriteDto userFavoriteDto) throws IOException,
             InterruptedException;
+
+    ResponseEntity<Void> removeUser(Integer userID) throws IOException, InterruptedException;
 }

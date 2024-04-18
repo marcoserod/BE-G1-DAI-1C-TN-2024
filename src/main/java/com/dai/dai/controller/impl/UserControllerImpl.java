@@ -142,4 +142,26 @@ public class UserControllerImpl implements UserController {
         userService.removeFavorite(userFavoriteDto);
         return ResponseEntity.noContent().build();
     }
+
+
+    @Operation(summary = "Deletes user by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User removed."),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "409", description = "User not found.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
+    @DeleteMapping("{user_id}")
+    @Override
+    public ResponseEntity<Void> removeUser(@Valid @PathVariable(value = "user_id" ) Integer userId) throws IOException,
+            InterruptedException {
+        userService.removeUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

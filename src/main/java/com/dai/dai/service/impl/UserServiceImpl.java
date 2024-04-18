@@ -185,4 +185,9 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("An error occurred while querying the database");
         }
     }
+
+    @Override
+    public void removeUser(Integer userID) throws IOException, InterruptedException {
+        //TODO
+    }
 }
