@@ -16,4 +16,6 @@ public interface UserService {
     GetMoviesResponse getFavorites(Integer userID) throws IOException, InterruptedException;
 
     void removeFavorite(UserFavoriteDto userFavoriteDto) throws IOException, InterruptedException;
+
+    void removeUser(Integer userID) throws IOException, InterruptedException;
 }
