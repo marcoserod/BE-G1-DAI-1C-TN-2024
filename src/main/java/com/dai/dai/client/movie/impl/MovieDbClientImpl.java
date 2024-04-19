@@ -29,10 +29,10 @@ public class MovieDbClientImpl implements MovieDbClient {
 
 
     @Override
-    public List<Movie> getPopularMovies() throws IOException, InterruptedException {
+    public List<Movie> getPopularMovies(Integer page) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getPopularMovies init");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/popular?language=en-US&page="+page))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -41,10 +41,10 @@ public class MovieDbClientImpl implements MovieDbClient {
     }
 
     @Override
-    public List<Movie> getNowPlaying() throws IOException, InterruptedException {
+    public List<Movie> getNowPlaying(Integer page) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getNowPlaying init");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page="+page))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())

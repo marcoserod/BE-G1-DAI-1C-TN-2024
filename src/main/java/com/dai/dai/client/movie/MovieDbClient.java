@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface MovieDbClient {
 
-    List<Movie> getPopularMovies() throws IOException, InterruptedException;
-    List<Movie> getNowPlaying() throws IOException, InterruptedException;
+    List<Movie> getPopularMovies(Integer page) throws IOException, InterruptedException;
+    List<Movie> getNowPlaying(Integer page) throws IOException, InterruptedException;
     Movie getMovieById(Integer movieId) throws IOException, InterruptedException;
     List<Genre> getAvailableMovieGenres() throws IOException, InterruptedException;
     MovieTrailer getMovieTrailerById(Integer movieId) throws IOException, InterruptedException;

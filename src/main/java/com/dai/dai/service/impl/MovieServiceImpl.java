@@ -21,9 +21,9 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMoviesResponse getPopularMovies() throws IOException, InterruptedException {
+    public GetMoviesResponse getPopularMovies(Integer page) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getPopularMovies() .");
-        var response = movieDbClient.getPopularMovies();
+        var response = movieDbClient.getPopularMovies(page);
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
         return GetMoviesResponse.builder()
                 .movies(response)
@@ -31,9 +31,9 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMoviesResponse getNowPlayingMovies() throws IOException, InterruptedException {
+    public GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getNowPlayingMovies() .");
-        var response = movieDbClient.getNowPlaying();
+        var response = movieDbClient.getNowPlaying(page);
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
         return GetMoviesResponse.builder()
                 .movies(response)
@@ -43,10 +43,14 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getMovieById(). Id: {}.",movieId);
-        var response = movieDbClient.getMovieById(movieId);
-        log.info("[MovieService] Se recupera el detalle de la pelicula {} correctamente.", response.getTitle());
+        var movieDetails = movieDbClient.getMovieById(movieId);
+        var movieCast = movieDbClient.getMovieCastByMovieId(movieId);
+        var movieTrailer = movieDbClient.getMovieTrailerById(movieId);
+        log.info("[MovieService] Se recupera el detalle de la pelicula {} correctamente.", movieDetails.getTitle());
         return GetMovieDetailsResponse.builder()
-                .movie(response)
+                .movie(movieDetails)
+                .movieCast(movieCast)
+                .movieTrailer(movieTrailer)
                 .build();
     }
 
@@ -59,24 +63,6 @@ public class MovieServiceImpl implements MovieService {
 
         return GetAvailableMovieGenresResponse.builder()
                 .genreList(response)
-                .build();
-    }
-
-    @Override
-    public GetMovieTrailerDetailsResponse getMovieTrailerById(Integer movieId) throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del método getMovieTrailerById(). Id: {}.", movieId);
-        var response = movieDbClient.getMovieTrailerById(movieId);
-        return GetMovieTrailerDetailsResponse.builder()
-                .movieTrailer(response)
-                .build();
-    }
-
-    @Override
-    public GetMovieCastResponse getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del método getMovieCastByMovieId(). Id: {}.", movieId);
-        var response = movieDbClient.getMovieCastByMovieId(movieId);
-        return GetMovieCastResponse.builder()
-                .movieCast(response)
                 .build();
     }
 
