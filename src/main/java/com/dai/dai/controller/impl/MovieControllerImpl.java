@@ -31,25 +31,7 @@ public class MovieControllerImpl implements MovieController {
     MovieService movieService;
 
 
-    @Operation(summary = "It returns a list of popular movies, allowing users to easily access trending content.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operation successful",
-                    content = { @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Movie.class)))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class))) })
-    @GetMapping("/popular")
-    @Override
-    public ResponseEntity<GetMoviesResponse> getPopularMovies(
-            @RequestParam(value = "page") Integer page,
-            @RequestHeader(name = "Authorization") String accessToken
-    ) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.getPopularMovies(page), HttpStatus.OK);
-    }
+
 
     @Operation(summary = "It returns a list of movies currently in theaters.")
     @ApiResponses(value = {
@@ -62,7 +44,7 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
-    @GetMapping("/now_playing")
+    @GetMapping("/nowPlaying")
     @Override
     public ResponseEntity<GetMoviesResponse> getNowPlayingMovies(
             @RequestParam(value = "page") Integer page,

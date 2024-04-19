@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,19 +27,6 @@ public class MovieDbClientImpl implements MovieDbClient {
     Movies movieListApiExt = new Movies();
     ObjectMapper objectMapper = new ObjectMapper();
 
-
-
-    @Override
-    public List<Movie> getPopularMovies(Integer page) throws IOException, InterruptedException {
-        log.info("[MovieDbClient] getPopularMovies init");
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/popular?language=en-US&page="+page))
-                .header("accept", "application/json")
-                .header("Authorization", "Bearer "+accesToken)
-                .method("GET", HttpRequest.BodyPublishers.noBody())
-                .build();
-        return this.getMovieListRequest(request);
-    }
 
     @Override
     public List<Movie> getNowPlaying(Integer page) throws IOException, InterruptedException {
@@ -198,5 +186,40 @@ public class MovieDbClientImpl implements MovieDbClient {
         List<Movie> res =  this.getMovieListRequest(request);
 
         return res;
+    }
+
+    @Override
+    public ImageList getMovieImagesByMovieId(Integer movieId) throws IOException, InterruptedException {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+ movieId +
+                        "/images?include_image_language=es&language=es"))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404){
+            log.error("No pudimos encontrar las imagenes asociadas a la pelicula de id: {}",movieId);
+            throw new TmdbNotFoundException("We couldn't retrieve the  by ID: "+movieId);
+        }
+        List<Image> imageList = new ArrayList<>();
+        JsonNode resultsNode;
+        try {
+            var jsonResponse = objectMapper.readTree(response.body());
+            resultsNode = jsonResponse.get("posters");
+
+            if (resultsNode.isArray() && resultsNode.size() > 0) {
+                for (JsonNode result : resultsNode) {
+                    var path = result.get("file_path").asText();
+                    imageList.add(new Image(path));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while consulting TMDB Api", e);
+        }
+        return ImageList.builder()
+                .images(imageList)
+                .build();
     }
 }

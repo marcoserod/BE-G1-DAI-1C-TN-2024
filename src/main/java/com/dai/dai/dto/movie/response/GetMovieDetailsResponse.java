@@ -1,5 +1,6 @@
 package com.dai.dai.dto.movie.response;
 
+import com.dai.dai.client.movie.dto.ImageList;
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.dto.MovieCast;
 import com.dai.dai.client.movie.dto.MovieTrailer;
@@ -19,5 +20,9 @@ public class GetMovieDetailsResponse {
 
     @Schema(description = "List of cast members.")
     MovieCast movieCast;
+
+    @Schema(description = "List od images.")
+    ImageList imageList;
+
 
 }

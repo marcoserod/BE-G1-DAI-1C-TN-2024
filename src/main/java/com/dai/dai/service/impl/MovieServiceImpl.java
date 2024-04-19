@@ -20,15 +20,7 @@ public class MovieServiceImpl implements MovieService {
         this.movieDbClient = movieDbClient;
     }
 
-    @Override
-    public GetMoviesResponse getPopularMovies(Integer page) throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del metodo getPopularMovies() .");
-        var response = movieDbClient.getPopularMovies(page);
-        log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
-        return GetMoviesResponse.builder()
-                .movies(response)
-                .build();
-    }
+
 
     @Override
     public GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException {
@@ -43,6 +35,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del metodo getMovieById(). Id: {}.",movieId);
+        var movieImages = movieDbClient.getMovieImagesByMovieId(movieId);
         var movieDetails = movieDbClient.getMovieById(movieId);
         var movieCast = movieDbClient.getMovieCastByMovieId(movieId);
         var movieTrailer = movieDbClient.getMovieTrailerById(movieId);
@@ -51,6 +44,7 @@ public class MovieServiceImpl implements MovieService {
                 .movie(movieDetails)
                 .movieCast(movieCast)
                 .movieTrailer(movieTrailer)
+                .imageList(movieImages)
                 .build();
     }
 
