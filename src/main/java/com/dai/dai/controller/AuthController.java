@@ -7,7 +7,7 @@ public interface AuthController {
 
     URI initGoogleAuth() throws AuthenticationException;
 
-    void handleGoogleCallback(String code) throws AuthenticationException;
-
     String refreshToken(String refreshToken) throws AuthenticationException;
+
+    void logout(String refreshToken) throws AuthenticationException;
 }
