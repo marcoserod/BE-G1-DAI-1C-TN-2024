@@ -12,7 +12,7 @@ public class UserConverter {
                 .name(userEntity.getName())
                 .nickname(userEntity.getNickname())
                 .surname(userEntity.getSurname())
-                .profile_image(userEntity.getProfile_image())
+                .profileImage(userEntity.getProfile_image())
                 .build();
     }
 }

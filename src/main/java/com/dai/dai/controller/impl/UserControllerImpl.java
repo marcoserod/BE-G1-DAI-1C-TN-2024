@@ -4,7 +4,6 @@ import com.dai.dai.controller.UserController;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.PostUsersResponse;
 import com.dai.dai.dto.user.dto.UserDto;
-import com.dai.dai.dto.user.dto.UserFavoriteDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,17 +20,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 
 @AllArgsConstructor
 @RestController
-@Tag(name = "User Controller", description = "Endpoints for user-related operations")
+@Tag(name = "User Controller", description = "Endpoints for user-related operations.")
 @RequestMapping("/users")
 public class UserControllerImpl implements UserController {
 
     UserService userService;
-    @Operation(summary = "Gets user info for a given user id.")
+    @Operation(summary = "It gets user info for a given user id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User found",
                     content = { @Content(mediaType = "application/json", schema =
@@ -39,129 +36,141 @@ public class UserControllerImpl implements UserController {
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "404", description = "User not found.",
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @GetMapping("/details/{user_id}")
+    @GetMapping("{userId}")
     @Override
-    public ResponseEntity<UserDto> getUserInfoById(@Valid @PathVariable(value = "user_id" ) Integer userId) {
+    public ResponseEntity<UserDto> getUserInfoById(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                                   @RequestHeader(name = "Authorization") String accessToken) {
         return new ResponseEntity<>(userService.getUserInfoById(userId), HttpStatus.OK);
     }
 
 
-    @Operation(summary = "Creates a new user with the data obtained from the call")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = PostUsersResponse.class)) }),
-            @ApiResponse(responseCode = "400", description = "Bad request.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "409", description = "Existing nickname",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Internal server error.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) })
-    })
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        return new ResponseEntity<>(userService.createUser(userDto), CREATED);
-    }
-
-    @Operation(summary = "Adds film to user favorites")
+    @Operation(summary = "It adds film to user favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Film added to favorites."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "404", description = "Movie not found",
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "409", description = "User not found",
+            @ApiResponse(responseCode = "404", description = "Movie not found.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @PostMapping("/favorites")
+    @PostMapping("/{userId}/favorites/{filmId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addFavorite(@RequestBody UserFavoriteDto userFavoriteDto) throws IOException,
-            InterruptedException {
-        userService.addFavorite(userFavoriteDto);
+    public ResponseEntity<Void> addFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                            @Valid @PathVariable(value = "filmId" ) Integer filmId,
+                                            @RequestHeader(name = "Authorization") String accessToken)
+            throws IOException, InterruptedException {
+        userService.addFavorite(userId, filmId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
-    @Operation(summary = "Returns the movies from the user favorites")
+    @Operation(summary = "It returns the movies from the user favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Film favorite found."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "409", description = "User not found.",
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @GetMapping("/favorites/{user_id}")
+    @GetMapping("/{userId}/favorites")
     @Override
     public ResponseEntity<GetMoviesResponse> getFavorites(
-            @Valid @PathVariable(value = "user_id" ) Integer userId) throws IOException, InterruptedException {
+            @Valid @PathVariable(value = "userId" ) Integer userId,
+            @RequestHeader(name = "Authorization") String accessToken,
+            @RequestParam(value = "page") Integer page) throws IOException, InterruptedException {
         return new ResponseEntity<>(userService.getFavorites(userId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Removes a movie from the user favorites")
+    @Operation(summary = "It removes a movie from the user favorites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Film favorite removed."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "404", description = "Movie is not in favorites",
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "409", description = "User not found.",
+            @ApiResponse(responseCode = "404", description = "Movie is not in favorites.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @DeleteMapping("/favorites")
+    @DeleteMapping("/{userId}/favorites/{filmId}")
     @Override
-    public ResponseEntity<Void> removeFavorite(@RequestBody UserFavoriteDto userFavoriteDto) throws IOException,
-            InterruptedException {
-        userService.removeFavorite(userFavoriteDto);
+    public ResponseEntity<Void> removeFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                               @Valid @PathVariable(value = "filmId" ) Integer filmId,
+                                               @RequestHeader(name = "Authorization") String accessToken)
+            throws IOException, InterruptedException {
+        userService.removeFavorite(userId, filmId);
         return ResponseEntity.noContent().build();
     }
 
 
-    @Operation(summary = "Deletes user by its id")
+    @Operation(summary = "It deletes user by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User removed."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "409", description = "User not found.",
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @DeleteMapping("{user_id}")
+    @DeleteMapping("{userId}")
     @Override
-    public ResponseEntity<Void> removeUser(@Valid @PathVariable(value = "user_id" ) Integer userId) throws IOException,
+    public ResponseEntity<Void> removeUser(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                           @RequestHeader(name = "Authorization") String accessToken) throws IOException,
             InterruptedException {
         userService.removeUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "It updates an existing user with the provided data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = PostUsersResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "409", description = "Existing nickname.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
+    @PatchMapping
+    @Override
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
+                                              @RequestHeader(name = "Authorization") String accessToken) {
+        return null;
     }
 }
