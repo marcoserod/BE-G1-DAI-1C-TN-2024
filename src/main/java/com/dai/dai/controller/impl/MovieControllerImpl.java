@@ -107,7 +107,7 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
-    @GetMapping("/genre/list")
+    @GetMapping("/genres")
     @Override
     public ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres(
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
