@@ -4,7 +4,6 @@ import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.converter.user.UserConverter;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
-import com.dai.dai.dto.user.dto.UserFavoriteDto;
 import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
@@ -61,7 +60,7 @@ public class UserServiceImpl implements UserService {
                 StringUtils.isEmpty(userDto.getEmail()) ||
                 StringUtils.isEmpty(userDto.getSurname()) ||
                 StringUtils.isEmpty(userDto.getNickname())  ||
-                StringUtils.isEmpty(userDto.getProfile_image())) {
+                StringUtils.isEmpty(userDto.getProfileImage())) {
             throw new IllegalArgumentException("All parameters are required");
         }
 
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setSurname(userDto.getSurname());
         user.setNickname(userDto.getNickname());
-        user.setProfile_image(userDto.getProfile_image());
+        user.setProfile_image(userDto.getProfileImage());
         List<UserFavoriteEntity> favorites = new ArrayList<>();
         user.setFavorites(favorites);
 
@@ -85,33 +84,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addFavorite(UserFavoriteDto userFavoriteDto) {
+    public void addFavorite(Integer userId, Integer filmId) {
 
         Optional<UserEntity> userOptional;
 
         try{
-            userOptional = userRepository.findById(Integer.valueOf(userFavoriteDto.getUser_id()));
+            userOptional = userRepository.findById(Integer.valueOf(userId));
         } catch (Exception e) {
             log.error("ERROR: {}", e.getMessage());
             throw new RuntimeException("An error occurred while querying the database");
         }
 
         if (userOptional.isEmpty()) {
-            throw new ConflictException("User not found for userId "+ userFavoriteDto.getUser_id());
+            throw new ConflictException("User not found for userId "+ userId);
         }
 
         try {
-            movieService.getMovieById(Integer.valueOf(userFavoriteDto.getFilm_id()));
+            movieService.getMovieById(filmId);
 
             var user = userOptional.get();
             var userFavorite = new UserFavoriteEntity();
-            userFavorite.setFilm_id(userFavoriteDto.getFilm_id());
+            userFavorite.setFilm_id(String.valueOf(filmId));
             userFavorite.setUser(user);
             user.getFavorites().add(userFavorite);
 
             userRepository.save(user);
         } catch (Exception e) {
-            throw new TmdbNotFoundException("Couldn't find the movie with ID " + userFavoriteDto.getFilm_id());
+            throw new TmdbNotFoundException("Couldn't find the movie with ID " + filmId);
         }
     }
 
@@ -147,39 +146,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removeFavorite(UserFavoriteDto userFavoriteDto) {
+    public void removeFavorite(Integer userId, Integer filmId) {
         Optional<UserEntity> userOptional;
 
         try {
-            userOptional = userRepository.findById(Integer.valueOf(userFavoriteDto.getUser_id()));
+            userOptional = userRepository.findById(Integer.valueOf(userId));
         } catch (Exception e) {
             log.error("ERROR: {}", e.getMessage());
             throw new RuntimeException("An error occurred while querying the database");
         }
 
         if (userOptional.isEmpty()) {
-            throw new ConflictException("User not found for userId "+ userFavoriteDto.getUser_id());
+            throw new ConflictException("User not found for userId "+ userId);
         }
 
         var userFavorites = userOptional.get().getFavorites();
         var filmNotFound = true;
 
         for (UserFavoriteEntity favorite : userFavorites) {
-            if (favorite.getFilm_id().equals(userFavoriteDto.getFilm_id())) {
+            if (favorite.getFilm_id().equals(filmId)) {
                 filmNotFound = false;
                 break;
             }
         }
 
         if (filmNotFound) {
-            throw new TmdbNotFoundException("Movie with id " + userFavoriteDto.getFilm_id() + " is not in user " +
+            throw new TmdbNotFoundException("Movie with id " + filmId + " is not in user " +
                     "favorites");
         }
 
         try {
-            userFavoriteRepository.deleteByUserIdAndFilmId(Integer.valueOf(userFavoriteDto.getUser_id()),
-                    Integer.valueOf(userFavoriteDto.getFilm_id()));
-
+            userFavoriteRepository.deleteByUserIdAndFilmId(userId, filmId);
         } catch (Exception e) {
             log.error("ERROR: {}", e.getMessage());
             throw new RuntimeException("An error occurred while querying the database");
