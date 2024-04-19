@@ -15,11 +15,11 @@ import javax.naming.AuthenticationException;
 import java.net.URI;
 
 @AllArgsConstructor
-@Tag(name = "Auth Controller", description = "Controller responsible for handling authentication operations.")
+@Tag(name = "Auth Controller", description = "Endpoints for handling authentication operations.")
 @RequestMapping("/auth")
 @RestController
 public class AuthControllerImpl implements AuthController {
-    @Operation(summary = "This endpoint initiates the authentication process using Google as the identity provider." +
+    @Operation(summary = "It initiates the authentication process using Google as the identity provider." +
             " The user will be redirected to the Google login page.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Found. (Redirection to Google Single Sign On.)"),
@@ -29,13 +29,13 @@ public class AuthControllerImpl implements AuthController {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
-    @PostMapping(value = "/google")
+    @PostMapping
     @Override
     public URI initGoogleAuth() throws AuthenticationException {
         return null;
     }
 
-    @Operation(summary = "This endpoint handles the response from Google after the user has logged in. Here, " +
+    /*@Operation(summary = "This endpoint handles the response from Google after the user has logged in. Here, " +
             "the received authorization code from Google is verified and processed.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Found. (Redirection from Google Single Sign On.)"),
@@ -52,9 +52,9 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public void handleGoogleCallback(@RequestParam("code")String code) throws AuthenticationException {
 
-    }
+    }*/
 
-    @Operation(summary = "This endpoint is used to request a new access token using a previously " +
+    @Operation(summary = "It requests a new access token using a previously " +
             "obtained refresh token.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh token generated successfully.",
@@ -73,5 +73,17 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public String refreshToken(@RequestParam("refreshToken") String refreshToken) throws AuthenticationException {
         return null;
+    }
+
+    @Operation(summary = "It logs the user out by invalidating the current session.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logout successful."),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class))) })
+    @PostMapping(value = "/logout")
+    @Override
+    public void logout(@RequestParam(name = "accessToken") String accessToken) {
+
     }
 }
