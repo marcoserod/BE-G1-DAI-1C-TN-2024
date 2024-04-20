@@ -177,7 +177,7 @@ public class UserControllerImpl implements UserController {
 
     @Operation(summary = "It rates a film by a user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Film added to favorites."),
+            @ApiResponse(responseCode = "201", description = "Film successfully rated."),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
