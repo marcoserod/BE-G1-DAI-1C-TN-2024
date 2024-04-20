@@ -3,6 +3,7 @@ package com.dai.dai.controller.impl;
 import com.dai.dai.controller.UserController;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.PostUsersResponse;
+import com.dai.dai.dto.user.dto.FilmRatingDto;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.UserService;
@@ -172,5 +173,31 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
                                               @RequestHeader(name = "Authorization") String accessToken) {
         return null;
+    }
+
+    @Operation(summary = "It rates a film by a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Film added to favorites."),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "404", description = "Movie not found.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) })
+    })
+    @PostMapping("/{userId}/ratings/{filmId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                            @Valid @PathVariable(value = "filmId" ) Integer filmId,
+                                            @RequestHeader(name = "Authorization") String accessToken,
+                                            @RequestBody FilmRatingDto filmRatingDto)
+            throws IOException, InterruptedException {
+       return null;
     }
 }
