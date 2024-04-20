@@ -78,12 +78,13 @@ public class AuthControllerImpl implements AuthController {
     @Operation(summary = "It logs the user out by invalidating the current session.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Logout successful."),
+            @ApiResponse(responseCode = "401", description = "The user is not logged in."),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
-    @PostMapping(value = "/logout")
+    @DeleteMapping
     @Override
-    public void logout(@RequestParam(name = "accessToken") String accessToken) {
+    public void logout(@RequestHeader(name = "Authorization") String accessToken) {
 
     }
 }
