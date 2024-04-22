@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -29,9 +30,6 @@ import java.io.IOException;
 public class MovieControllerImpl implements MovieController {
 
     MovieService movieService;
-
-
-
 
     @Operation(summary = "It returns a list of movies currently in theaters.")
     @ApiResponses(value = {
@@ -118,6 +116,8 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetMoviesResponse> getMoviesByName(
             @RequestParam(value = "name") String name,
+            @RequestParam(value = "sort", required = false) String orderBy,
+            @RequestParam(value = "filters", required = false) List<String> filters,
             @RequestParam(value = "page") Integer page,
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMoviesByName(name), HttpStatus.OK);
