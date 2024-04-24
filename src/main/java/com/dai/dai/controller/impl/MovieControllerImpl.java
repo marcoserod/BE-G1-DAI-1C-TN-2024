@@ -6,7 +6,6 @@ import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -116,10 +115,10 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetMoviesResponse> getMoviesByName(
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "sort", required = false) String orderBy,
+            @RequestParam(value = "sortCriteria") String orderBy,
             @RequestParam(value = "filters", required = false) List<String> filters,
             @RequestParam(value = "page") Integer page,
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.getMoviesByName(name), HttpStatus.OK);
+        return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy), HttpStatus.OK);
     }
 }

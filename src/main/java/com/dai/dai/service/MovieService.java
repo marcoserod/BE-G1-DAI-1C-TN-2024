@@ -12,6 +12,6 @@ public interface MovieService {
 
     GetAvailableMovieGenresResponse getAvailableMovieGenres() throws IOException, InterruptedException;
 
-    GetMoviesResponse getMoviesByName(String name) throws IOException, InterruptedException;
+    GetMoviesResponse getMoviesByName(String name, String orderBy) throws IOException, InterruptedException;
 
 }

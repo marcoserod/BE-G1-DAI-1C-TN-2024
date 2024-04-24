@@ -3,6 +3,7 @@ package com.dai.dai.exception.handler;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.exception.TmdbNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +17,7 @@ public class DaiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private String BAD_REQUEST_MESSAGE = "BAD REQUEST: Revise el swagger para validar la manera correcta de consumir el endpoint.";
 
-    @ExceptionHandler(value = { MethodArgumentTypeMismatchException.class })
+    @ExceptionHandler(value = { MethodArgumentTypeMismatchException.class, BadRequestException.class})
     protected ResponseEntity<DaiException> handleGenericException(MethodArgumentTypeMismatchException exception){
         log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
 

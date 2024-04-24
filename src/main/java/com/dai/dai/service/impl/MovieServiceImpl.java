@@ -5,7 +5,11 @@ import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
 
@@ -15,6 +19,14 @@ import java.io.IOException;
 public class MovieServiceImpl implements MovieService {
 
     MovieDbClientImpl movieDbClient;
+    @Value("${movie.service.filter.case1}")
+    private String CASE1;
+    @Value("${movie.service.filter.case2}")
+    private String CASE2;
+    @Value("${movie.service.filter.case3}")
+    private String CASE3;
+    @Value("${movie.service.filter.case4}")
+    private String CASE4;
 
     public MovieServiceImpl(MovieDbClientImpl movieDbClient) {
         this.movieDbClient = movieDbClient;
@@ -61,8 +73,18 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMoviesResponse getMoviesByName(String name) throws IOException, InterruptedException {
+    public GetMoviesResponse getMoviesByName(String name, String orderBy) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del método getMoviesByName(). name: {}.", name);
+
+        if (orderBy != null){
+            //TODO Switch con diferentes filtros.
+
+
+        } else {
+            log.error("Criterio de ordenamiento desconocido.");
+            throw new BadRequestException();
+        }
+
         //No permite espacios para hacer la query, por eso se cambia el espacio por un 20.
         String nameAdapted = name.replace(" ", "%20");
         log.info("[MovieService] Nombre adaptado: {}.", name);
