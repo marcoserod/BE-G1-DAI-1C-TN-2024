@@ -1,6 +1,7 @@
 package com.dai.dai.client.movie.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +16,12 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Movie {
     private Long id;
+    @JsonProperty(value = "original_name")
     private String title;
-    private String original_title;
     private String poster_path;// (foto)
     private String overview;
-    private Date release_date;
+    @JsonProperty(value = "first_air_date")
+    private String release_date;
     private Double vote_average;
     private Long vote_count;
 

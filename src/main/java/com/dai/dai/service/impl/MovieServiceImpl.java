@@ -1,6 +1,7 @@
 package com.dai.dai.service.impl;
 
 
+import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.service.MovieService;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -19,14 +23,6 @@ import java.io.IOException;
 public class MovieServiceImpl implements MovieService {
 
     MovieDbClientImpl movieDbClient;
-    @Value("${movie.service.filter.case1}")
-    private String CASE1;
-    @Value("${movie.service.filter.case2}")
-    private String CASE2;
-    @Value("${movie.service.filter.case3}")
-    private String CASE3;
-    @Value("${movie.service.filter.case4}")
-    private String CASE4;
 
     public MovieServiceImpl(MovieDbClientImpl movieDbClient) {
         this.movieDbClient = movieDbClient;
@@ -76,20 +72,30 @@ public class MovieServiceImpl implements MovieService {
     public GetMoviesResponse getMoviesByName(String name, String orderBy) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del método getMoviesByName(). name: {}.", name);
 
-        if (orderBy != null){
-            //TODO Switch con diferentes filtros.
-
-
-        } else {
-            log.error("Criterio de ordenamiento desconocido.");
-            throw new BadRequestException();
-        }
-
         //No permite espacios para hacer la query, por eso se cambia el espacio por un 20.
         String nameAdapted = name.replace(" ", "%20");
         log.info("[MovieService] Nombre adaptado: {}.", name);
 
         var response = movieDbClient.getMoviesByName(nameAdapted);
+        if (orderBy != null){
+            switch (orderBy){
+                case "date:desc,rate:desc":
+                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                            "Fechas descendente y Rating descendente.");
+                case "date:asc,rate:desc":
+                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                            "Fechas Ascendente y Rating descendente.");
+                case "date:desc,rate:asc":
+                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                            "Fechas descendente y Rating Ascendente.");
+                case "date:asc,rate:asc":
+                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                            "Fechas descendente y Rating Ascendente.");
+            }
+        } else {
+            log.error("Criterio de ordenamiento desconocido.");
+            throw new BadRequestException();
+        }
         return GetMoviesResponse.builder()
                 .movies(response)
                 .build();

@@ -98,7 +98,6 @@ public class MovieDbClientImpl implements MovieDbClient {
                         Movie movie = new Movie();
                         movie.setId(oneMovie.getId());
                         movie.setTitle(oneMovie.getTitle());
-                        movie.setOriginal_title(oneMovie.getOriginal_title());
                         movie.setPoster_path(oneMovie.getPoster_path());
                         movie.setOverview(oneMovie.getOverview());
                         movie.setRelease_date(oneMovie.getRelease_date());
