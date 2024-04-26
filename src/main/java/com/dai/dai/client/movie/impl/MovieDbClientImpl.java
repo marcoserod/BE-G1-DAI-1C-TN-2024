@@ -32,7 +32,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public List<Movie> getNowPlaying(Integer page) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getNowPlaying init");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page="+page))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=es&page="+page))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -68,7 +68,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public List<Genre> getAvailableMovieGenres() throws IOException, InterruptedException {
         log.info("[MovieDbClient] getAvailableMovieGenres.");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/genre/movie/list?language=en"))
+                .uri(URI.create("https://api.themoviedb.org/3/genre/movie/list?language=es"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -152,7 +152,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     @Override
     public MovieCast getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"/credits?language=en-US"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"/credits?language=es"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -176,7 +176,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public List<Movie> getMoviesByName(String name) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=true" +
-                        "&language=en-US&page=1"))
+                        "&language=es&page=1"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
