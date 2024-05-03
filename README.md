@@ -23,8 +23,8 @@ the MoviePlay mobile application.
 ## Technologies
 
 - **Backend**: Java Spring Boot
-- **Database**: MySql
-- **Deployment**: Google Cloud Platform
+- **Database**: PostgreSQL
+- **Deployment**: Render
 - **Documentation**: Swagger
 
 ## Installation
@@ -49,78 +49,58 @@ mvn spring-boot:run
 ```
 
 
+### Pre-Deployment Steps
+
+Before deploying new changes or updating the repository, ensure the Docker image is up-to-date running the following 
+command:
+```
+mvn clean package 
+```
+
+
 ## Configuration
-### Database - Mysql
-1. Download and install a database server: MySQL.
+### Database - Postgresql on Render
+This section provides information on how to work with the configured PostgreSQL database on Render for 
+our application.
+#### Configuration Overview
+Database connection settings are already configured in the application.properties file of the application. 
+This file includes the necessary credentials and connection information required to connect to the PostgreSQL 
+database hosted on Render when running application.
+
+#### Connecting to the Database with client
+1. To manage the database schema or perform any database operations, you can connect to PostgreSQL database using any 
+PostgreSQL client tool that you prefer, such as psql or a GUI-based tool like pgAdmin. You need to ensure PostgreSQL is 
+installed on your machine. Here's how to proceed:
 
      ```
-     Link: https://dev.mysql.com/downloads/mysql/
+     Link: https://www.postgresql.org/download/
      ```
 
 2. Open the Command Prompt (CMD) and navigate to the location of the /bin folder (created during the server installation) 
-using the following command
-
-    ```cmd 
-    cd C:\Program Files\MySQL\MySQL Server 8.1\bin
-    ```
-
-3. Start the MySQL server
+using the following command. 
 
     ```
-    mysqld
+     cd C:\Program Files\PostgreSQL\16\bin
     ```
-4. Once the MySQL server is up and running, you can connect using the MySQL client with the following command. 
-(In the mysql console)
+3. To simplify the usage of PostgreSQL commands from any Command Prompt window, you should add
+   the PostgreSQL bin directory to your system's PATH environment variable. 
+
+4. Connect using the PostgreSQL client or with the following command on cmd. 
+
     ```
-    mysql -u root -p
+    psql -h <hostname> -U <username> -d <dbname>
     ```
    You will see the following message
     ```
     Enter password:
     ```
-   This will prompt you to enter the password for the MySQL root user. Enter it and press Enter.
+   This will prompt you to enter the password for the PostgreSQL server. Enter it and press Enter.
 
-   *** At this point, we are already interacting directly with the database command line.***
-5. Verify existing databases:
-   ```sql
-   mysql> SHOW DATABASES;
-   ```
-6. Create database named "DAIDB":
-   ```sql
-   mysql> CREATE DATABASE DAIDB;
-   ```
-7. Then, select the "DAIDB" database with the following command:
-   ```sql
-   mysql> USE DAIDB;
-   ```
-8. Now you are ready to create the "users" table. Run the following script in the same command line:
+5. Now you are ready to see the created tables and perform additional operations as needed
 
-   ```sql
-   mysql> CREATE TABLE users (
-               id SERIAL PRIMARY KEY,
-               email VARCHAR(255),
-               name VARCHAR(255),
-               surname VARCHAR(255),
-               nickname VARCHAR(255),
-               profile_image VARCHAR(255)
-            );
    ```
-9. Then, create table "user_favorites":
-
-   ```sql
-   mysql> CREATE TABLE user_favorites (
-               id SERIAL PRIMARY KEY,
-               user_id INT,
-               FOREIGN KEY (user_id) REFERENCES users(id),
-               film_id INT
-            );
+   psql> \dt;
    ```
-
-10. Let's validate that they have been created correctly with the command:
-
-    ```sql
-    mysql> SHOW TABLES;
-    ```
 
 ## Documentation
 ### Api swagger
