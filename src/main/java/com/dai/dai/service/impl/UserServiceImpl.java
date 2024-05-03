@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
             var user = userOptional.get();
             var userFavorite = new UserFavoriteEntity();
-            userFavorite.setFilm_id(String.valueOf(filmId));
+            userFavorite.setFilm_id(filmId);
             userFavorite.setUser(user);
             user.getFavorites().add(userFavorite);
 

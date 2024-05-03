@@ -16,7 +16,7 @@ public class UserFavoriteEntity {
     private Integer id;
 
     @Column(name = "film_id")
-    private String film_id;
+    private Integer film_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
