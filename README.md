@@ -93,11 +93,11 @@ using the following command
    ```sql
    mysql> USE DAIDB;
    ```
-8. Now you are ready to create the "Usuarios" table. Run the following script in the same command line:
+8. Now you are ready to create the "users" table. Run the following script in the same command line:
 
    ```sql
    mysql> CREATE TABLE users (
-               id INT AUTO_INCREMENT PRIMARY KEY,
+               id SERIAL PRIMARY KEY,
                email VARCHAR(255),
                name VARCHAR(255),
                surname VARCHAR(255),
@@ -109,10 +109,10 @@ using the following command
 
    ```sql
    mysql> CREATE TABLE user_favorites (
-               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+               id SERIAL PRIMARY KEY,
                user_id INT,
                FOREIGN KEY (user_id) REFERENCES users(id),
-               film_id BIGINT
+               film_id INT
             );
    ```
 
