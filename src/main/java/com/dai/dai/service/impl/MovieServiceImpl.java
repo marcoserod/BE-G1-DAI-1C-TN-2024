@@ -4,13 +4,10 @@ package com.dai.dai.service.impl;
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
+import com.dai.dai.exception.SortCriteriaNotAllowedException;
 import com.dai.dai.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -18,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -80,32 +76,40 @@ public class MovieServiceImpl implements MovieService {
         log.info("[MovieService] Nombre adaptado: {}.", name);
         var response = movieDbClient.getMoviesByName(nameAdapted);
         removeEmptyOrNullMovies(response);
-        if (orderBy != null){
-            switch (orderBy){
-                case "date:desc,rate:desc":
-                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                            "Fechas descendente y Rating descendente.");
-                    sortMoviesByReleaseDateDescendingAndRatingDescending(response);
-                case "date:asc,rate:desc":
-                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                            "Fechas Ascendente y Rating descendente.");
-                    sortMoviesByReleaseDateAscendingAndRatingDescending(response);
-                case "date:desc,rate:asc":
-                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                            "Fechas descendente y Rating Ascendente.");
-                    sortMoviesByReleaseDateDescendingAndRatingAscending(response);
-                case "date:asc,rate:asc":
-                    log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                            "Fechas descendente y Rating Ascendente.");
-                    sortMoviesByReleaseDateAscendingAndRatingAscending(response);
-            }
-        } else {
-            log.error("Criterio de ordenamiento desconocido.");
-            throw new BadRequestException();
+        switch (orderBy){
+            case "date:desc,rate:desc":
+                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                        "Fechas descendente y Rating descendente.");
+                sortMoviesByReleaseDateDescendingAndRatingDescending(response);
+                return GetMoviesResponse.builder()
+                        .movies(response)
+                        .build();
+            case "date:asc,rate:desc":
+                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                        "Fechas Ascendente y Rating descendente.");
+                sortMoviesByReleaseDateAscendingAndRatingDescending(response);
+                return GetMoviesResponse.builder()
+                        .movies(response)
+                        .build();
+            case "date:desc,rate:asc":
+                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                        "Fechas descendente y Rating Ascendente.");
+                sortMoviesByReleaseDateDescendingAndRatingAscending(response);
+                return GetMoviesResponse.builder()
+                        .movies(response)
+                        .build();
+            case "date:asc,rate:asc":
+                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
+                        "Fechas descendente y Rating Ascendente.");
+                sortMoviesByReleaseDateAscendingAndRatingAscending(response);
+                return GetMoviesResponse.builder()
+                        .movies(response)
+                        .build();
+            default:
+                log.error("Criterio de ordenamiento desconocido.");
+                throw new SortCriteriaNotAllowedException("Criterio de ordenamiento desconocido.");
         }
-        return GetMoviesResponse.builder()
-                .movies(response)
-                .build();
+
     }
 
 

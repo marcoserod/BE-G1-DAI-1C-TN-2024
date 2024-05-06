@@ -1,6 +1,7 @@
 package com.dai.dai.exception.handler;
 
 import com.dai.dai.exception.DaiException;
+import com.dai.dai.exception.SortCriteriaNotAllowedException;
 import com.dai.dai.exception.TmdbNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -16,13 +17,25 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class DaiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private String BAD_REQUEST_MESSAGE = "BAD REQUEST: Revise el swagger para validar la manera correcta de consumir el endpoint.";
+    private String SORT_CRITERIA_NOT_ALLOWED = "BAD REQUEST: Revise el swagger para validar los metodos de ordenamiento tolerados.";
 
-    @ExceptionHandler(value = { MethodArgumentTypeMismatchException.class, BadRequestException.class})
+    @ExceptionHandler(value = { MethodArgumentTypeMismatchException.class})
     protected ResponseEntity<DaiException> handleGenericException(MethodArgumentTypeMismatchException exception){
         log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
 
         var ex = DaiException.builder()
                 .message(BAD_REQUEST_MESSAGE)
+                .build();
+
+        return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { SortCriteriaNotAllowedException.class})
+    protected ResponseEntity<DaiException> handleSortCriteriaNotAllowedException(SortCriteriaNotAllowedException exception){
+        log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
+
+        var ex = DaiException.builder()
+                .message(SORT_CRITERIA_NOT_ALLOWED)
                 .build();
 
         return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
