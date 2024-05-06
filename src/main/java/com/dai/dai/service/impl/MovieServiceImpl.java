@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,22 +78,26 @@ public class MovieServiceImpl implements MovieService {
         //No permite espacios para hacer la query, por eso se cambia el espacio por un 20.
         String nameAdapted = name.replace(" ", "%20");
         log.info("[MovieService] Nombre adaptado: {}.", name);
-
         var response = movieDbClient.getMoviesByName(nameAdapted);
+        removeEmptyOrNullMovies(response);
         if (orderBy != null){
             switch (orderBy){
                 case "date:desc,rate:desc":
                     log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                             "Fechas descendente y Rating descendente.");
+                    sortMoviesByReleaseDateDescendingAndRatingDescending(response);
                 case "date:asc,rate:desc":
                     log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                             "Fechas Ascendente y Rating descendente.");
+                    sortMoviesByReleaseDateAscendingAndRatingDescending(response);
                 case "date:desc,rate:asc":
                     log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                             "Fechas descendente y Rating Ascendente.");
+                    sortMoviesByReleaseDateDescendingAndRatingAscending(response);
                 case "date:asc,rate:asc":
                     log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                             "Fechas descendente y Rating Ascendente.");
+                    sortMoviesByReleaseDateAscendingAndRatingAscending(response);
             }
         } else {
             log.error("Criterio de ordenamiento desconocido.");
@@ -99,5 +106,105 @@ public class MovieServiceImpl implements MovieService {
         return GetMoviesResponse.builder()
                 .movies(response)
                 .build();
+    }
+
+
+    private void removeEmptyOrNullMovies(List<Movie> list) {
+        for (int i = 0 ; i<list.size() ; i++ ){
+            if (list.get(i).getRelease_date() == null || list.get(i).getRelease_date().isEmpty()){
+                list.remove(i);
+                log.info("Se eliminó la pelicula de id: {}", list.get(i).getId());
+            }
+        }
+    }
+
+    private void sortMoviesByReleaseDateAscendingAndRatingAscending(List<Movie> list) {
+        list.sort(new Comparator<Movie>() {
+            @Override
+            public int compare(Movie movie1, Movie movie2) {
+                // Compare by release date first
+                Date date1 = parseReleaseDate(movie1.getRelease_date());
+                Date date2 = parseReleaseDate(movie2.getRelease_date());
+                int releaseDateComparison = date1.compareTo(date2);
+
+                // If release dates are equal, compare by rating
+                if (releaseDateComparison == 0) {
+                    Double rating1 = movie1.getVote_average(); // Assuming rating is a Double
+                    Double rating2 = movie2.getVote_average();
+                    return rating1.compareTo(rating2); // Ascending order for rating
+                }
+
+                // Otherwise, return the release date comparison result
+                return releaseDateComparison;
+            }
+        });
+    }
+
+    private void sortMoviesByReleaseDateDescendingAndRatingDescending(List<Movie> list) {
+        list.sort(new Comparator<Movie>() {
+            @Override
+            public int compare(Movie movie1, Movie movie2) {
+                Date date1 = parseReleaseDate(movie1.getRelease_date());
+                Date date2 = parseReleaseDate(movie2.getRelease_date());
+                int releaseDateComparison = date2.compareTo(date1); // Reverse order for descending
+
+                if (releaseDateComparison == 0) {
+                    Double rating1 = movie1.getVote_average();
+                    Double rating2 = movie2.getVote_average();
+                    return rating2.compareTo(rating1); // Reverse order for descending
+                }
+
+                return releaseDateComparison;
+            }
+        });
+    }
+
+    private void sortMoviesByReleaseDateAscendingAndRatingDescending(List<Movie> list) {
+        list.sort(new Comparator<Movie>() {
+            @Override
+            public int compare(Movie movie1, Movie movie2) {
+                Date date1 = parseReleaseDate(movie1.getRelease_date());
+                Date date2 = parseReleaseDate(movie2.getRelease_date());
+                int releaseDateComparison = date1.compareTo(date2);
+
+                if (releaseDateComparison == 0) {
+                    Double rating1 = movie1.getVote_average();
+                    Double rating2 = movie2.getVote_average();
+                    return rating2.compareTo(rating1); // Reverse order for descending
+                }
+
+                return releaseDateComparison;
+            }
+        });
+    }
+
+    private void sortMoviesByReleaseDateDescendingAndRatingAscending(List<Movie> list) {
+        list.sort(new Comparator<Movie>() {
+            @Override
+            public int compare(Movie movie1, Movie movie2) {
+                Date date1 = parseReleaseDate(movie1.getRelease_date());
+                Date date2 = parseReleaseDate(movie2.getRelease_date());
+                int releaseDateComparison = date2.compareTo(date1); // Reverse order for descending
+
+                if (releaseDateComparison == 0) {
+                    Double rating1 = movie1.getVote_average();
+                    Double rating2 = movie2.getVote_average();
+                    return rating1.compareTo(rating2);
+                }
+
+                return releaseDateComparison;
+            }
+        });
+    }
+
+
+    private static Date parseReleaseDate(String releaseDateStr) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // Ajusta el formato según sea necesario
+        try {
+            return format.parse(releaseDateStr);
+        } catch (ParseException e) {
+            // Maneja la excepción de análisis (por ejemplo, registra el error, devuelve null)
+            throw new RuntimeException("Error al analizar la fecha de lanzamiento: " + releaseDateStr, e);
+        }
     }
 }
