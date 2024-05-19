@@ -12,15 +12,12 @@ import com.dai.dai.repository.UserFavoriteRepository;
 import com.dai.dai.repository.UserRepository;
 import com.dai.dai.service.MovieService;
 import com.dai.dai.service.UserService;
-import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @Slf4j
@@ -30,6 +27,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     UserFavoriteRepository userFavoriteRepository;
     MovieService movieService;
+    CloudinaryServiceImpl cloudinaryService;
 
     @Override
     public UserDto getUserInfoById(Integer userId) {
@@ -54,33 +52,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public Integer createUser(UserDto userDto) throws IOException {
 
-        if (StringUtils.isEmpty(userDto.getName()) ||
-                StringUtils.isEmpty(userDto.getEmail()) ||
-                StringUtils.isEmpty(userDto.getSurname()) ||
-                StringUtils.isEmpty(userDto.getNickname())  ||
-                StringUtils.isEmpty(userDto.getProfileImage())) {
-            throw new IllegalArgumentException("All parameters are required");
-        }
-
-        if (userRepository.findByNickname(userDto.getNickname()) != null) {
-            throw new ConflictException("Existing nickname");
-        }
-
-        //First approach without google sign in
         var user = new UserEntity();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setSurname(userDto.getSurname());
         user.setNickname(userDto.getNickname());
-        user.setProfile_image(userDto.getProfileImage());
+
+        //Cloudinary
+        var url = cloudinaryService.upload(userDto.getProfileImage());
+        user.setProfile_image(url);
+        ////
+
         List<UserFavoriteEntity> favorites = new ArrayList<>();
         user.setFavorites(favorites);
 
         var userSave = userRepository.save(user);
-        userDto.setId(userSave.getId());
-        return userDto;
+        return userSave.getId();
     }
 
     @Override
