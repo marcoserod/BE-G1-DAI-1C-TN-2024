@@ -11,23 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.naming.AuthenticationException;
+import java.io.IOException;
 
 public interface AuthController {
 
-    @Operation(summary = "It initiates the authentication process using Google as the identity provider." +
-            " The user will be redirected to the Google login page.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Logged in"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class))) })
-    @PostMapping()
-    ResponseEntity<JwtResponse> login(String authenticationRequest) throws AuthenticationException;
+    ResponseEntity<JwtResponse> login(String authenticationRequest) throws Exception;
 
-    String refreshToken(String refreshToken) throws AuthenticationException;
+    ResponseEntity<JwtResponse> refreshToken(String refreshToken) throws Exception;
 
-    void logout(String refreshToken) throws AuthenticationException;
+    void logout(String refreshToken) throws Exception;
 }
