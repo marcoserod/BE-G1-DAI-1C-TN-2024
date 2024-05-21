@@ -1,5 +1,7 @@
 package com.dai.dai.security;
 
+import com.dai.dai.entity.SessionEntity;
+import com.dai.dai.repository.SessionRepository;
 import com.dai.dai.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -8,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +20,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.security.Key;
+import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
+    @Value("${jwt.client.secret}")
+    String secretKey;
 
-    private final String secretKey = "A5C4C46BD6CCC1396B3DEFED617339E9EBD4A8EA4B0CA3EE81FCA4FC2FBB26D1";
     private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -39,13 +45,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .parseClaimsJws(authorizationHeader)
                         .getBody();
                 var email = claims.getSubject();
-
                 var userDetails = userRepository.findByEmail(email);
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null,null);
+                var userSession = sessionRepository.findByUserEmail(email);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                //Chequea si tiene una sesión en la bbdd, si la sesión no está vencida y si esta Activa.
+                if (userSession.isPresent() ){
+                    var sessionToken = userSession.get().getToken();
+                    Claims sessionTokenClaims = Jwts.parserBuilder()
+                            .setSigningKey(key)
+                            .build()
+                            .parseClaimsJws(sessionToken)
+                            .getBody();
+                    var expiration = sessionTokenClaims.getExpiration();
+                    var isActive = sessionTokenClaims.get("isActive", Boolean.class);
+                    if (expiration.before(new Date()) && isActive){
+                        var authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null,null);
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                } else {
+                    throw new Exception("Unauthorized.");
+                }
+
+
+
 
         } catch (JwtException | IllegalArgumentException e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());

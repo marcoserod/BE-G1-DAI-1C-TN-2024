@@ -3,6 +3,8 @@ package com.dai.dai.controller.impl;
 import com.dai.dai.controller.AuthController;
 import com.dai.dai.dto.auth.JwtResponse;
 import com.dai.dai.exception.DaiException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +19,11 @@ import com.dai.dai.service.impl.SessionServiceImpl;
 
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.crypto.SecretKey;
 import javax.naming.AuthenticationException;
+
+import java.io.IOException;
+import java.util.Base64;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -41,13 +47,9 @@ public class AuthControllerImpl implements AuthController {
                     @Schema(implementation = DaiException.class))) })
     @PostMapping()
     @Override
-    public ResponseEntity<JwtResponse> login(String authenticationRequest) {
-        try {
-            var jwtResponse = sessionService.generateToken(authenticationRequest);
-            return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new ResponseStatusException(UNAUTHORIZED, "Unauthorized");
-        }
+    public ResponseEntity<JwtResponse> login(String authenticationRequest) throws Exception {
+            return new ResponseEntity<>(sessionService.generateToken(authenticationRequest), HttpStatus.OK);
+
     }
 
     @Operation(summary = "It requests a new access token using a previously " +
@@ -67,8 +69,9 @@ public class AuthControllerImpl implements AuthController {
                     @Schema(implementation = DaiException.class))) })
     @PostMapping(value = "/refreshToken")
     @Override
-    public String refreshToken(@RequestParam("refreshToken") String refreshToken) throws AuthenticationException {
-        return null;
+    public ResponseEntity<JwtResponse> refreshToken(@RequestParam("refreshToken") String refreshToken) throws Exception {
+        return new ResponseEntity<>(sessionService.refreshToken(refreshToken), HttpStatus.OK);
+
     }
 
     @Operation(summary = "It logs the user out by invalidating the current session.")
@@ -80,7 +83,7 @@ public class AuthControllerImpl implements AuthController {
                     @Schema(implementation = DaiException.class))) })
     @DeleteMapping
     @Override
-    public void logout(@RequestHeader(name = "Authorization") String accessToken) {
-
+    public void logout(@RequestParam("refreshToken") String refreshToken) throws Exception {
+        sessionService.logout(refreshToken);
     }
 }

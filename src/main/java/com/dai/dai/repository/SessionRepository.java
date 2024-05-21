@@ -13,5 +13,6 @@ public interface SessionRepository extends JpaRepository<SessionEntity, Integer>
     @Override
     Optional<SessionEntity> findById(Integer integer);
 
-    SessionEntity findByUserEmail(String user_email);
+    Optional<SessionEntity> findByUserEmail(String user_email);
+
 }
