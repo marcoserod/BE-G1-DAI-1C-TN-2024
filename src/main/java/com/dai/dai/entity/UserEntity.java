@@ -34,6 +34,6 @@ public class UserEntity {
     @Column(name = "profile_image")
     private String profile_image;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<UserFavoriteEntity> favorites;
 }

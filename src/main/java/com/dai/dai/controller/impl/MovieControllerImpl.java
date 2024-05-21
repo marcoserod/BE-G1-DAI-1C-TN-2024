@@ -94,7 +94,8 @@ public class MovieControllerImpl implements MovieController {
     }
 
     @Operation(summary = "It returns a list of movies based on their original titles, translated titles, " +
-            "alternative titles, or cast member names.")
+            "alternative titles, or cast member names. " +
+            "Allowed params for the sortCriteria: date:desc,rate:desc - date:asc,rate:desc - date:desc,rate:asc - date:asc,rate:asc")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json", schema =

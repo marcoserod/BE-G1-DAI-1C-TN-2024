@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface UserService {
     UserDto getUserInfoById(Integer userID);
 
-    UserDto createUser(UserDto userDto);
+    Integer createUser(UserDto userDto) throws IOException;
 
     void addFavorite(Integer userId, Integer filmId) throws IOException, InterruptedException;
 

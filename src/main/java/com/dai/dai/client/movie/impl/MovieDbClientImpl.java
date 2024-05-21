@@ -16,6 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,7 +38,37 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
-        return this.getMovieListRequest(request);
+
+        List<Movie> movieListReturned;
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        try{
+            movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
+
+            movieListReturned = movieListApiExt.getResults().stream()
+                    .map(oneMovie -> {
+                        Movie movie = new Movie();
+                        if (oneMovie.getName() != null){
+                            movie.setTitle(oneMovie.getName());
+                        }else {
+                            movie.setTitle(oneMovie.getTitle());
+                        }
+                        if (oneMovie.getFirst_air_date() != null){
+                            movie.setRelease_date(oneMovie.getFirst_air_date());
+                        } else {
+                            movie.setRelease_date(oneMovie.getRelease_date());
+                        }
+                        movie.setId(oneMovie.getId());
+                        movie.setPoster_path(oneMovie.getPoster_path());
+                        movie.setOverview(oneMovie.getOverview());
+                        movie.setVote_average(oneMovie.getVote_average());
+                        movie.setVote_count(oneMovie.getVote_count());
+                        return movie;
+                    })
+                    .collect(Collectors.toList());
+            return movieListReturned;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while consulting TMDB Api");
+        }
     }
 
     @Override
@@ -88,25 +119,62 @@ public class MovieDbClientImpl implements MovieDbClient {
         }
     }
 
+
+
     private List<Movie> getMovieListRequest(HttpRequest request) throws IOException, InterruptedException {
         List<Movie> movieListReturned;
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         try {
            movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
-           movieListReturned = movieListApiExt.getResults().stream()
-                    .map(oneMovie -> {
-                        Movie movie = new Movie();
-                        movie.setId(oneMovie.getId());
-                        movie.setTitle(oneMovie.getTitle());
-                        movie.setPoster_path(oneMovie.getPoster_path());
-                        movie.setOverview(oneMovie.getOverview());
-                        movie.setRelease_date(oneMovie.getRelease_date());
-                        movie.setVote_average(oneMovie.getVote_average());
-                        movie.setVote_count(oneMovie.getVote_count());
-                        return movie;
-                    })
-                    .collect(Collectors.toList());
-            return movieListReturned;
+           if (movieListApiExt.getResults().get(0).getMedia_type().equals("person")){
+               movieListReturned = new ArrayList<>();
+               for (Movie oneMovie : movieListApiExt.getResults().get(0).getKnown_for()){
+                   Movie movie = new Movie();
+                   if (oneMovie.getName() != null){
+                       movie.setTitle(oneMovie.getName());
+                   }else {
+                       movie.setTitle(oneMovie.getTitle());
+                   }
+                   if (oneMovie.getFirst_air_date() != null){
+                       movie.setRelease_date(oneMovie.getFirst_air_date());
+                   } else {
+                       movie.setRelease_date(oneMovie.getRelease_date());
+                   }
+                   movie.setId(oneMovie.getId());
+                   movie.setPoster_path(oneMovie.getPoster_path());
+                   movie.setOverview(oneMovie.getOverview());
+                   movie.setRelease_date(oneMovie.getRelease_date());
+                   movie.setVote_average(oneMovie.getVote_average());
+                   movie.setVote_count(oneMovie.getVote_count());
+                   if ( movie.getRelease_date() != null || movie.getVote_count() != 0){
+                       movieListReturned.add(movie);
+                   }
+               }
+               return movieListReturned;
+           }else{
+               movieListReturned = movieListApiExt.getResults().stream()
+                       .map(oneMovie -> {
+                           Movie movie = new Movie();
+                           if (oneMovie.getName() != null){
+                               movie.setTitle(oneMovie.getName());
+                           }else {
+                               movie.setTitle(oneMovie.getTitle());
+                           }
+                           if (oneMovie.getFirst_air_date() != null){
+                               movie.setRelease_date(oneMovie.getFirst_air_date());
+                           } else {
+                               movie.setRelease_date(oneMovie.getRelease_date());
+                           }
+                           movie.setId(oneMovie.getId());
+                           movie.setPoster_path(oneMovie.getPoster_path());
+                           movie.setOverview(oneMovie.getOverview());
+                           movie.setVote_average(oneMovie.getVote_average());
+                           movie.setVote_count(oneMovie.getVote_count());
+                           return movie;
+                       })
+                       .collect(Collectors.toList());
+               return movieListReturned;
+           }
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
