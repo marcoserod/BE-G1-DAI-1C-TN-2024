@@ -56,9 +56,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                             .build()
                             .parseClaimsJws(sessionToken)
                             .getBody();
-                    var expiration = sessionTokenClaims.getExpiration();
                     var isActive = sessionTokenClaims.get("isActive", Boolean.class);
-                    if (expiration.before(new Date()) && isActive){
+                    if ( isActive ){
                         var authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails, null,null);
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

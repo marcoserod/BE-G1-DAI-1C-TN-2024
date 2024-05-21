@@ -85,7 +85,7 @@ public class SessionServiceImpl implements SessionService {
         String refreshToken;
         if (user == null) {
             var randomString = UUID.randomUUID().toString();
-            var nickname = surname + randomString.substring(0, 4);
+            var nickname = name + randomString.substring(0, 4);
             userId = userService.createUser(UserDto.builder().email(email)
                     .name(name)
                     .nickname(nickname)
@@ -124,8 +124,6 @@ public class SessionServiceImpl implements SessionService {
 
 
         }
-
-
 
         var authResponse = JwtResponse.builder()
                 .userId(userId)
