@@ -1,6 +1,8 @@
 package com.dai.dai.security;
 
 import com.dai.dai.entity.SessionEntity;
+import com.dai.dai.exception.InternalServerErrorException;
+import com.dai.dai.exception.UnauthorizedException;
 import com.dai.dai.repository.SessionRepository;
 import com.dai.dai.repository.UserRepository;
 import io.jsonwebtoken.*;
@@ -71,15 +73,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 
         } catch (JwtException | IllegalArgumentException e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write("{\"message\": \"Invalid or expired token\"}");
-            return;
+            throw new UnauthorizedException("Invalid or expired token");
         } catch (Exception e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write("{\"message\": \"Invalid or expired token\"}");
-            return;
+            throw new InternalServerErrorException("An error occurred.");
+
         }
 
         chain.doFilter(request, response);
@@ -89,7 +86,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.equals("/auth") || path.equals("/auth/refreshToken");
+        return path.equals("/auth") || path.equals("/auth/refreshToken")  || path.equals("/api-docs ");
     }
 
 }

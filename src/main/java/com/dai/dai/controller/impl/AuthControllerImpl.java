@@ -38,7 +38,9 @@ public class AuthControllerImpl implements AuthController {
     @Operation(summary = "It initiates the authentication process using Google as the identity provider." +
             " The user will be redirected to the Google login page.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Logged in"),
+            @ApiResponse(responseCode = "200", description = "Logged in",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = JwtResponse.class)) }),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
@@ -57,7 +59,7 @@ public class AuthControllerImpl implements AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh token generated successfully.",
                     content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = String.class)) }),
+                    @Schema(implementation = JwtResponse.class)) }),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
