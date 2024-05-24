@@ -1,6 +1,5 @@
 package com.dai.dai.security;
 
-import com.dai.dai.entity.SessionEntity;
 import com.dai.dai.exception.InternalServerErrorException;
 import com.dai.dai.exception.UnauthorizedException;
 import com.dai.dai.repository.SessionRepository;
@@ -12,9 +11,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -22,8 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.security.Key;
-import java.util.Date;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -38,45 +37,52 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
-                final String authorizationHeader = request.getHeader("Authorization");
-
-                Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
-                Claims claims = Jwts.parserBuilder()
+            final String authorizationHeader = request.getHeader("Authorization");
+            Claims claims = null;
+            Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
+            if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith("bearer ")) {
+                var authorizationHeaderSubstring = authorizationHeader.substring(7);
+                claims = Jwts.parserBuilder()
                         .setSigningKey(key)
                         .build()
-                        .parseClaimsJws(authorizationHeader)
+                        .parseClaimsJws(authorizationHeaderSubstring)
                         .getBody();
-                var email = claims.getSubject();
-                var userDetails = userRepository.findByEmail(email);
-                var userSession = sessionRepository.findByUserEmail(email);
+            } else {
+                log.error("El header Authentication no contiene un bearer token valido.");
+                throw new UnauthorizedException("El header Authentication no contiene un bearer token valido.");
+            }
+            var email = claims.getSubject();
+            var userDetails = userRepository.findByEmail(email);
+            var userSession = sessionRepository.findByUserEmail(email);
 
-                //Chequea si tiene una sesión en la bbdd, si la sesión no está vencida y si esta Activa.
-                if (userSession.isPresent() ){
-                    var sessionToken = userSession.get().getToken();
-                    Claims sessionTokenClaims = Jwts.parserBuilder()
-                            .setSigningKey(key)
-                            .build()
-                            .parseClaimsJws(sessionToken)
-                            .getBody();
-                    var isActive = sessionTokenClaims.get("isActive", Boolean.class);
-                    if ( isActive ){
-                        var authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null,null);
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                } else {
-                    throw new Exception("Unauthorized.");
+            //Chequea si tiene una sesión en la bbdd, si la sesión no está vencida y si esta Activa.
+            if (userSession.isPresent() ){
+                var sessionToken = userSession.get().getToken();
+                Claims sessionTokenClaims = Jwts.parserBuilder()
+                        .setSigningKey(key)
+                        .build()
+                        .parseClaimsJws(sessionToken)
+                        .getBody();
+                var isActive = sessionTokenClaims.get("isActive", Boolean.class);
+                if ( isActive ){
+                    var authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null,null);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+            } else {
+                log.error("El usuario no posee una sesión activa.");
+                throw new UnauthorizedException("El usuario no posee una sesión activa.");
+            }
 
 
 
 
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthorizedException("Invalid or expired token");
+            log.error("El token es invalido o está expirado.");
+            throw new UnauthorizedException("El token es invalido o está expirado.");
         } catch (Exception e) {
-            throw new InternalServerErrorException("An error occurred.");
-
+            throw new InternalServerErrorException("Ocurrió un Internal Server Error.");
         }
 
         chain.doFilter(request, response);
@@ -86,7 +92,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.equals("/auth") || path.equals("/auth/refreshToken")  || path.equals("/api-docs ");
+        return path.equals("/auth") || path.equals("/auth/refreshToken")  || path.equals("/api-docs");
     }
 
 }

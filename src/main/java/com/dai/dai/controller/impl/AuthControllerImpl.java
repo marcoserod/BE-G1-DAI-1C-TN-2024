@@ -2,6 +2,9 @@ package com.dai.dai.controller.impl;
 
 import com.dai.dai.controller.AuthController;
 import com.dai.dai.dto.auth.JwtResponse;
+import com.dai.dai.dto.auth.request.AuthRequest;
+import com.dai.dai.dto.auth.request.LogOutRequest;
+import com.dai.dai.dto.auth.request.RefreshTokenRequest;
 import com.dai.dai.exception.DaiException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -49,8 +52,8 @@ public class AuthControllerImpl implements AuthController {
                     @Schema(implementation = DaiException.class))) })
     @PostMapping()
     @Override
-    public ResponseEntity<JwtResponse> login(String authenticationRequest) throws Exception {
-            return new ResponseEntity<>(sessionService.generateToken(authenticationRequest), HttpStatus.OK);
+    public ResponseEntity<JwtResponse> login(@RequestBody AuthRequest authenticationRequest) throws Exception {
+            return new ResponseEntity<>(sessionService.generateToken(authenticationRequest.getAuthToken()), HttpStatus.OK);
 
     }
 
@@ -71,8 +74,8 @@ public class AuthControllerImpl implements AuthController {
                     @Schema(implementation = DaiException.class))) })
     @PostMapping(value = "/refreshToken")
     @Override
-    public ResponseEntity<JwtResponse> refreshToken(@RequestParam("refreshToken") String refreshToken) throws Exception {
-        return new ResponseEntity<>(sessionService.refreshToken(refreshToken), HttpStatus.OK);
+    public ResponseEntity<JwtResponse> refreshToken(@RequestBody RefreshTokenRequest refreshToken) throws Exception {
+        return new ResponseEntity<>(sessionService.refreshToken(refreshToken.getRefreshToken()), HttpStatus.OK);
 
     }
 
@@ -85,7 +88,7 @@ public class AuthControllerImpl implements AuthController {
                     @Schema(implementation = DaiException.class))) })
     @DeleteMapping
     @Override
-    public void logout(@RequestParam("refreshToken") String refreshToken) throws Exception {
-        sessionService.logout(refreshToken);
+    public void logout(@RequestBody LogOutRequest refreshToken) throws Exception {
+        sessionService.logout(refreshToken.getRefreshToken());
     }
 }
