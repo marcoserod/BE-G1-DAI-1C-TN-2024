@@ -6,6 +6,8 @@ import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,6 +47,8 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetMoviesResponse> getNowPlayingMovies(
             @RequestParam(value = "page") Integer page,
+            @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
+                    schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken
     ) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getNowPlayingMovies(page), HttpStatus.OK);
@@ -71,6 +75,8 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetMovieDetailsResponse> getMovieById(
             @Valid @PathVariable(value = "movieId" ) Integer movieId,
+            @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
+                    schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
     }
@@ -89,6 +95,8 @@ public class MovieControllerImpl implements MovieController {
     @GetMapping("/genres")
     @Override
     public ResponseEntity<GetAvailableMovieGenresResponse> getAvailableMovieGenres(
+            @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
+                    schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getAvailableMovieGenres() ,HttpStatus.OK);
     }
@@ -119,6 +127,8 @@ public class MovieControllerImpl implements MovieController {
             @RequestParam(value = "sortCriteria") String orderBy,
             @RequestParam(value = "filters", required = false) List<String> filters,
             @RequestParam(value = "page") Integer page,
+            @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
+                    schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy), HttpStatus.OK);
     }

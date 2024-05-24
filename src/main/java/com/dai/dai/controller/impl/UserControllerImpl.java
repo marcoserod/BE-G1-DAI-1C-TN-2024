@@ -8,6 +8,8 @@ import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,6 +49,9 @@ public class UserControllerImpl implements UserController {
     @GetMapping("{userId}")
     @Override
     public ResponseEntity<UserDto> getUserInfoById(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                                   @Parameter(name = "Authorization", description = "Bearer token",
+                                                           required = true, in = ParameterIn.HEADER,
+                                                           schema = @Schema(type = "string", format = "Bearer"))
                                                    @RequestHeader(name = "Authorization") String accessToken) {
         return new ResponseEntity<>(userService.getUserInfoById(userId), HttpStatus.OK);
     }
@@ -72,6 +77,9 @@ public class UserControllerImpl implements UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> addFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
                                             @Valid @PathVariable(value = "filmId" ) Integer filmId,
+                                            @Parameter(name = "Authorization", description = "Bearer token",
+                                                    required = true, in = ParameterIn.HEADER,
+                                                    schema = @Schema(type = "string", format = "Bearer"))
                                             @RequestHeader(name = "Authorization") String accessToken)
             throws IOException, InterruptedException {
         userService.addFavorite(userId, filmId);
@@ -96,6 +104,9 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<GetMoviesResponse> getFavorites(
             @Valid @PathVariable(value = "userId" ) Integer userId,
+            @Parameter(name = "Authorization", description = "Bearer token",
+                    required = true, in = ParameterIn.HEADER,
+                    schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken,
             @RequestParam(value = "page") Integer page) throws IOException, InterruptedException {
         return new ResponseEntity<>(userService.getFavorites(userId), HttpStatus.OK);
@@ -121,6 +132,9 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<Void> removeFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
                                                @Valid @PathVariable(value = "filmId" ) Integer filmId,
+                                               @Parameter(name = "Authorization", description = "Bearer token",
+                                                       required = true, in = ParameterIn.HEADER,
+                                                       schema = @Schema(type = "string", format = "Bearer"))
                                                @RequestHeader(name = "Authorization") String accessToken)
             throws IOException, InterruptedException {
         userService.removeFavorite(userId, filmId);
@@ -144,8 +158,11 @@ public class UserControllerImpl implements UserController {
     @DeleteMapping("{userId}")
     @Override
     public ResponseEntity<Void> removeUser(@Valid @PathVariable(value = "userId" ) Integer userId,
-                                           @RequestHeader(name = "Authorization") String accessToken) throws IOException,
-            InterruptedException {
+                                           @Parameter(name = "Authorization", description = "Bearer token",
+                                                   required = true, in = ParameterIn.HEADER,
+                                                   schema = @Schema(type = "string", format = "Bearer"))
+                                           @RequestHeader(name = "Authorization") String accessToken)
+            throws IOException, InterruptedException {
         userService.removeUser(userId);
         return ResponseEntity.noContent().build();
     }
@@ -171,6 +188,9 @@ public class UserControllerImpl implements UserController {
     @PatchMapping
     @Override
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
+                                              @Parameter(name = "Authorization", description = "Bearer token",
+                                                      required = true, in = ParameterIn.HEADER,
+                                                      schema = @Schema(type = "string", format = "Bearer"))
                                               @RequestHeader(name = "Authorization") String accessToken) {
         return null;
     }
@@ -195,6 +215,9 @@ public class UserControllerImpl implements UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> addFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
                                             @Valid @PathVariable(value = "filmId" ) Integer filmId,
+                                            @Parameter(name = "Authorization", description = "Bearer token",
+                                                    required = true, in = ParameterIn.HEADER,
+                                                    schema = @Schema(type = "string", format = "Bearer"))
                                             @RequestHeader(name = "Authorization") String accessToken,
                                             @RequestBody FilmRatingDto filmRatingDto)
             throws IOException, InterruptedException {

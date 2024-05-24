@@ -11,5 +11,7 @@ import java.util.List;
 public class GetMoviesResponse {
     @Schema(description = "List of obtained movies", type = "array")
     List<Movie> movies;
+    @Schema(description = "Metadata")
+    ListMetadata metadata;
 
 }
