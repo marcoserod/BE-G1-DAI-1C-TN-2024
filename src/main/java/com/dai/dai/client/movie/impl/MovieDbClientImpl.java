@@ -118,7 +118,68 @@ public class MovieDbClientImpl implements MovieDbClient {
             throw new RuntimeException("An error occurred while retrieving the requested genres");
         }
     }
-    
+
+
+
+    private List<Movie> getMovieListRequest(HttpRequest request) throws IOException, InterruptedException {
+        List<Movie> movieListReturned;
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+           movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
+           if (movieListApiExt.getResults().get(0).getMedia_type().equals("person")){
+               movieListReturned = new ArrayList<>();
+               for (Movie oneMovie : movieListApiExt.getResults().get(0).getKnown_for()){
+                   Movie movie = new Movie();
+                   if (oneMovie.getName() != null){
+                       movie.setTitle(oneMovie.getName());
+                   }else {
+                       movie.setTitle(oneMovie.getTitle());
+                   }
+                   if (oneMovie.getFirst_air_date() != null){
+                       movie.setRelease_date(oneMovie.getFirst_air_date());
+                   } else {
+                       movie.setRelease_date(oneMovie.getRelease_date());
+                   }
+                   movie.setId(oneMovie.getId());
+                   movie.setPoster_path(oneMovie.getPoster_path());
+                   movie.setOverview(oneMovie.getOverview());
+                   movie.setRelease_date(oneMovie.getRelease_date());
+                   movie.setVote_average(oneMovie.getVote_average());
+                   movie.setVote_count(oneMovie.getVote_count());
+                   if ( movie.getRelease_date() != null || movie.getVote_count() != 0){
+                       movieListReturned.add(movie);
+                   }
+               }
+               return movieListReturned;
+           }else{
+               movieListReturned = movieListApiExt.getResults().stream()
+                       .map(oneMovie -> {
+                           Movie movie = new Movie();
+                           if (oneMovie.getName() != null){
+                               movie.setTitle(oneMovie.getName());
+                           }else {
+                               movie.setTitle(oneMovie.getTitle());
+                           }
+                           if (oneMovie.getFirst_air_date() != null){
+                               movie.setRelease_date(oneMovie.getFirst_air_date());
+                           } else {
+                               movie.setRelease_date(oneMovie.getRelease_date());
+                           }
+                           movie.setId(oneMovie.getId());
+                           movie.setPoster_path(oneMovie.getPoster_path());
+                           movie.setOverview(oneMovie.getOverview());
+                           movie.setVote_average(oneMovie.getVote_average());
+                           movie.setVote_count(oneMovie.getVote_count());
+                           return movie;
+                       })
+                       .collect(Collectors.toList());
+               return movieListReturned;
+           }
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while consulting TMDB Api");
+        }
+
+    }
 
     @Override
     public MovieTrailer getMovieTrailerById(Integer movieId) throws IOException, InterruptedException {
@@ -189,72 +250,9 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
 
-        List<Movie> movieListReturned = null;
-        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        try {
-            movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
-            if (movieListApiExt.getResults().get(0).getMedia_type().equals("person")){
-                log.info("Se van a recuperar peliculas asociadas al acrtor: {}.", movieListApiExt.getResults().get(0).getName());
+        List<Movie> res =  this.getMovieListRequest(request);
 
-                var actorId = movieListApiExt.getResults().get(0).getId();
-                HttpRequest actorRequest = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es&page=1&with_cast="+actorId))
-                        .header("accept", "application/json")
-                        .header("Authorization", "Bearer "+accesToken)
-                        .method("GET", HttpRequest.BodyPublishers.noBody())
-                        .build();
-                HttpResponse<String> actorResponse = HttpClient.newHttpClient().send(actorRequest, HttpResponse.BodyHandlers.ofString());
-                var movieListActorRes = objectMapper.readValue(actorResponse.body(), Movies.class);
-
-                movieListReturned = movieListActorRes.getResults().stream()
-                        .map(oneMovie -> {
-                            Movie movie = new Movie();
-                            if (oneMovie.getName() != null){
-                                movie.setTitle(oneMovie.getName());
-                            }else {
-                                movie.setTitle(oneMovie.getTitle());
-                            }
-                            if (oneMovie.getFirst_air_date() != null){
-                                movie.setRelease_date(oneMovie.getFirst_air_date());
-                            } else {
-                                movie.setRelease_date(oneMovie.getRelease_date());
-                            }
-                            movie.setId(oneMovie.getId());
-                            movie.setPoster_path(oneMovie.getPoster_path());
-                            movie.setOverview(oneMovie.getOverview());
-                            movie.setVote_average(oneMovie.getVote_average());
-                            movie.setVote_count(oneMovie.getVote_count());
-                            return movie;
-                        })
-                        .collect(Collectors.toList());
-                return movieListReturned;
-            }else{
-                movieListReturned = movieListApiExt.getResults().stream()
-                        .map(oneMovie -> {
-                            Movie movie = new Movie();
-                            if (oneMovie.getName() != null){
-                                movie.setTitle(oneMovie.getName());
-                            }else {
-                                movie.setTitle(oneMovie.getTitle());
-                            }
-                            if (oneMovie.getFirst_air_date() != null){
-                                movie.setRelease_date(oneMovie.getFirst_air_date());
-                            } else {
-                                movie.setRelease_date(oneMovie.getRelease_date());
-                            }
-                            movie.setId(oneMovie.getId());
-                            movie.setPoster_path(oneMovie.getPoster_path());
-                            movie.setOverview(oneMovie.getOverview());
-                            movie.setVote_average(oneMovie.getVote_average());
-                            movie.setVote_count(oneMovie.getVote_count());
-                            return movie;
-                        })
-                        .collect(Collectors.toList());
-                return movieListReturned;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while consulting TMDB Api");
-        }
+        return res;
     }
 
     @Override
@@ -291,6 +289,4 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .images(imageList)
                 .build();
     }
-    
-    
 }

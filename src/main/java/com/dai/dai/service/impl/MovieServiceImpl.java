@@ -36,7 +36,6 @@ public class MovieServiceImpl implements MovieService {
         log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.size());
         return GetMoviesResponse.builder()
                 .movies(response)
-                .metadata(setMetadata(response))
                 .build();
     }
 
@@ -84,7 +83,6 @@ public class MovieServiceImpl implements MovieService {
                 sortMoviesByReleaseDateDescendingAndRatingDescending(response);
                 return GetMoviesResponse.builder()
                         .movies(response)
-                        .metadata(setMetadata(response))
                         .build();
             case "date:asc,rate:desc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
@@ -92,7 +90,6 @@ public class MovieServiceImpl implements MovieService {
                 sortMoviesByReleaseDateAscendingAndRatingDescending(response);
                 return GetMoviesResponse.builder()
                         .movies(response)
-                        .metadata(setMetadata(response))
                         .build();
             case "date:desc,rate:asc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
@@ -100,7 +97,6 @@ public class MovieServiceImpl implements MovieService {
                 sortMoviesByReleaseDateDescendingAndRatingAscending(response);
                 return GetMoviesResponse.builder()
                         .movies(response)
-                        .metadata(setMetadata(response))
                         .build();
             case "date:asc,rate:asc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
@@ -108,7 +104,6 @@ public class MovieServiceImpl implements MovieService {
                 sortMoviesByReleaseDateAscendingAndRatingAscending(response);
                 return GetMoviesResponse.builder()
                         .movies(response)
-                        .metadata(setMetadata(response))
                         .build();
             default:
                 log.error("Criterio de ordenamiento desconocido.");
@@ -119,10 +114,10 @@ public class MovieServiceImpl implements MovieService {
 
 
     private void removeEmptyOrNullMovies(List<Movie> list) {
-        for (int i = list.size()-1 ; i>=0 ; i-- ){
+        for (int i = 0 ; i<list.size() ; i++ ){
             if (list.get(i).getRelease_date() == null || list.get(i).getRelease_date().isEmpty()){
-                log.info("Se eliminó la pelicula de id: {}", list.get(i).getId());
                 list.remove(i);
+                log.info("Se eliminó la pelicula de id: {}", list.get(i).getId());
             }
         }
     }
@@ -215,13 +210,5 @@ public class MovieServiceImpl implements MovieService {
             // Maneja la excepción de análisis (por ejemplo, registra el error, devuelve null)
             throw new RuntimeException("Error al analizar la fecha de lanzamiento: " + releaseDateStr, e);
         }
-    }
-
-    private ListMetadata setMetadata( List<Movie> movies){
-        return ListMetadata.builder()
-                .currentPage(1)
-                .pageSize(movies.size())
-                .totalRecords(movies.size())
-                .build();
     }
 }
