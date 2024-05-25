@@ -24,5 +24,9 @@ public class GetMovieDetailsResponse {
     @Schema(description = "List od images.")
     ImageList imageList;
 
+    @Schema(description = "Metadata")
+    ListMetadata metadata;
+
+
 
 }

@@ -3,6 +3,7 @@ package com.dai.dai.exception.handler;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.exception.SortCriteriaNotAllowedException;
 import com.dai.dai.exception.TmdbNotFoundException;
+import com.dai.dai.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
@@ -82,5 +84,25 @@ public class DaiExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ ResponseStatusException.class })
+    public ResponseEntity<DaiException> handleResponseStatusException(ResponseStatusException exception) {
+        log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
+        var ex = DaiException.builder()
+                .message(exception.getMessage())
+                .build();
+
+        return new ResponseEntity<>(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({ UnauthorizedException.class })
+    public ResponseEntity<DaiException> handleUnauthorizedException(UnauthorizedException exception) {
+        log.error("[DaiExceptionHandler] Generating exception for error: {}", exception.getMessage());
+        var ex = DaiException.builder()
+                .message(exception.getMessage())
+                .build();
+
+        return new ResponseEntity<>(ex, HttpStatus.UNAUTHORIZED);
     }
 }
