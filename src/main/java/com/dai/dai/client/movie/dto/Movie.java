@@ -32,5 +32,12 @@ public class Movie {
     private String media_type;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Movie> known_for;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<Genre> genres;
+    @JsonProperty(value = "runtime")
+    private Long duration;
+    @JsonProperty(value = "tagline")
+    private String subtitle;
+
 
 }

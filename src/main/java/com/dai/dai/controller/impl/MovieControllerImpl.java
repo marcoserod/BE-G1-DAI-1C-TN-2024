@@ -130,6 +130,6 @@ public class MovieControllerImpl implements MovieController {
             @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy), HttpStatus.OK);
+        return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy, page), HttpStatus.OK);
     }
 }
