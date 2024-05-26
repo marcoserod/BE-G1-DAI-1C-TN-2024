@@ -36,7 +36,7 @@ public class MovieControllerImpl implements MovieController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Movie.class)))}),
+                            array = @ArraySchema(schema = @Schema(implementation = GetMoviesResponse.class)))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
