@@ -33,10 +33,13 @@ public class Movie {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Movie> known_for;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<Genre> genres;
+    @JsonProperty(value = "genre_ids")
+    private List<Integer> genres;
     @JsonProperty(value = "runtime")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long duration;
     @JsonProperty(value = "tagline")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subtitle;
 
 

@@ -3,6 +3,7 @@ package com.dai.dai.service;
 import com.dai.dai.dto.movie.response.*;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface MovieService {
 
@@ -12,6 +13,6 @@ public interface MovieService {
 
     GetAvailableMovieGenresResponse getAvailableMovieGenres() throws IOException, InterruptedException;
 
-    GetMoviesResponse getMoviesByName(String name, String orderBy, Integer page) throws IOException, InterruptedException;
+    GetMoviesResponse getMoviesByName(String name, String orderBy, Integer page, List<String> filters) throws IOException, InterruptedException;
 
 }

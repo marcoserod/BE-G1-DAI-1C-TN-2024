@@ -228,7 +228,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 int contadorPaginasTmbd = 1;
 
                 //Consultamos n veces tmdb para conseguir las n paginas que tienen de peliculas.
-                while (contadorPaginasTmbd < totalPages ){
+                while (contadorPaginasTmbd <= totalPages ){
                     actorRequest = HttpRequest.newBuilder()
                             .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es&page=" + contadorPaginasTmbd +
                                     "&with_cast="+actorId))
@@ -256,6 +256,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                                 movie.setOverview(oneMovie.getOverview());
                                 movie.setVote_average(oneMovie.getVote_average());
                                 movie.setVote_count(oneMovie.getVote_count());
+                                movie.setGenres(oneMovie.getGenres());
                                 return movie;
                             })
                             .toList();
@@ -278,7 +279,7 @@ public class MovieDbClientImpl implements MovieDbClient {
 
 
                 //Consultamos n veces tmdb para conseguir las n paginas que tienen de peliculas.
-                while (contadorPaginasTmbd < totalPages ){
+                while (contadorPaginasTmbd <= totalPages ){
                     request = HttpRequest.newBuilder()
                             .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=true" +
                                     "&language=es&page="+contadorPaginasTmbd))
@@ -306,6 +307,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                                 movie.setOverview(oneMovie.getOverview());
                                 movie.setVote_average(oneMovie.getVote_average());
                                 movie.setVote_count(oneMovie.getVote_count());
+                                movie.setGenres(oneMovie.getGenres());
                                 return movie;
                             })
                             .toList();

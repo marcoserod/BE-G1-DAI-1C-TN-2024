@@ -19,9 +19,11 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -96,7 +98,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMoviesResponse getMoviesByName(String name, String orderBy, Integer page) throws IOException, InterruptedException {
+    public GetMoviesResponse getMoviesByName(String name, String orderBy, Integer page, List<String> filters) throws IOException, InterruptedException {
         log.info("[MovieService] Comienza la ejecución del método getMoviesByName(). name: {}.", name);
 
         //No permite espacios para hacer la query, por eso se cambia el espacio por un 20.
@@ -106,14 +108,20 @@ public class MovieServiceImpl implements MovieService {
         //Recupera todas las peliculas que encuentre.
         var response = movieDbClient.getMoviesByName(nameAdapted);
         removeEmptyOrNullMovies(response.getMovies());
-        int totalPages = (int) Math.ceil((float) response.getMovies().size() / pageSize);
+        List<Movie> movieFilteredList;
+        if (filters == null || filters.isEmpty()){
+            movieFilteredList = response.getMovies();
+        } else {
+            movieFilteredList = filterGenres(filters, response.getMovies());
+        }
+        int totalPages = (int) Math.ceil((float) movieFilteredList.size() / pageSize);
         List<Movie> sortedResponse;
         switch (orderBy){
             case "date:desc,rate:desc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                         "Fechas descendente y Rating descendente.");
-                sortMoviesByReleaseDateDescendingAndRatingDescending(response.getMovies());
-                sortedResponse = paginate(page, response.getMovies(), totalPages);
+                sortMoviesByReleaseDateDescendingAndRatingDescending(movieFilteredList);
+                sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
                         .metadata(setMetadata(sortedResponse, page, totalPages))
@@ -121,8 +129,8 @@ public class MovieServiceImpl implements MovieService {
             case "date:asc,rate:desc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                         "Fechas Ascendente y Rating descendente.");
-                sortMoviesByReleaseDateAscendingAndRatingDescending(response.getMovies());
-                sortedResponse = paginate(page, response.getMovies(),totalPages);
+                sortMoviesByReleaseDateAscendingAndRatingDescending(movieFilteredList);
+                sortedResponse = paginate(page, movieFilteredList,totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
                         .metadata(setMetadata(sortedResponse, page, totalPages))
@@ -130,8 +138,8 @@ public class MovieServiceImpl implements MovieService {
             case "date:desc,rate:asc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                         "Fechas descendente y Rating Ascendente.");
-                sortMoviesByReleaseDateDescendingAndRatingAscending(response.getMovies());
-                sortedResponse = paginate(page, response.getMovies(), totalPages);
+                sortMoviesByReleaseDateDescendingAndRatingAscending(movieFilteredList);
+                sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
                         .metadata(setMetadata(sortedResponse, page, totalPages))
@@ -139,8 +147,8 @@ public class MovieServiceImpl implements MovieService {
             case "date:asc,rate:asc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
                         "Fechas descendente y Rating Ascendente.");
-                sortMoviesByReleaseDateAscendingAndRatingAscending(response.getMovies());
-                sortedResponse = paginate(page, response.getMovies(), totalPages);
+                sortMoviesByReleaseDateAscendingAndRatingAscending(movieFilteredList);
+                sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
                         .metadata(setMetadata(sortedResponse, page, totalPages))
@@ -156,7 +164,9 @@ public class MovieServiceImpl implements MovieService {
     private void removeEmptyOrNullMovies(List<Movie> list) {
         for (int i = list.size()-1 ; i>=0 ; i-- ){
             if (list.get(i).getRelease_date() == null || list.get(i).getRelease_date().isEmpty() ||
-                    list.get(i).getOverview().isEmpty() || list.get(i).getVote_count().equals(0L) || list.get(i).getPoster_path().isEmpty()){
+                    list.get(i).getOverview() == null || list.get(i).getOverview().isEmpty() ||
+                    list.get(i).getVote_count() == null || list.get(i).getVote_count().equals(0L) ||
+                    list.get(i).getPoster_path() == null || list.get(i).getPoster_path().isEmpty()){
                 log.info("Se eliminó la pelicula de id: {}", list.get(i).getId());
                 list.remove(i);
             }
@@ -266,7 +276,7 @@ public class MovieServiceImpl implements MovieService {
         log.info("Se generar la pagina {} de las peliculas.", page);
         int firstItem = page * pageSize - (pageSize);
         int lastItem;
-        if (totalPages.equals(page)){
+        if (totalPages.equals(page) || totalPages.equals(0)){
             lastItem = movies.size();
         }else {
             lastItem = page * pageSize ;
@@ -274,5 +284,13 @@ public class MovieServiceImpl implements MovieService {
         return movies.subList(firstItem,lastItem);
 
 
+    }
+
+    private List<Movie> filterGenres(List<String> filters, List<Movie> movies ){
+
+        return movies.stream()
+                .filter(movie -> movie.getGenres().stream()
+                        .anyMatch(genre -> filters.contains(genre.toString())))
+                .collect(Collectors.toList());
     }
 }
