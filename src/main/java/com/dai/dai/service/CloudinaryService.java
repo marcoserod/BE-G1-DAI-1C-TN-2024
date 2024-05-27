@@ -12,5 +12,4 @@ public interface CloudinaryService {
 
     Map delete(String id) throws IOException;
 
-    File convert(MultipartFile multipartFile) throws IOException;
 }
