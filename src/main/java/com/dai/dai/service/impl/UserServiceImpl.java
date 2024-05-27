@@ -4,6 +4,7 @@ import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.converter.user.UserConverter;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
+import com.dai.dai.dto.user.dto.UserEditDto;
 import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
@@ -15,6 +16,7 @@ import com.dai.dai.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -175,5 +177,50 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeUser(Integer userID) throws IOException, InterruptedException {
         //TODO
+    }
+
+    @Override
+    public UserDto updateUser(UserEditDto userDto, MultipartFile file, Integer userId) throws IOException {
+
+        Optional<UserEntity> userOptional;
+
+        try {
+            userOptional = userRepository.findById(userId);
+        } catch (Exception e) {
+            log.error("ERROR: {}", e.getMessage());
+            throw new RuntimeException("An error occurred while querying the database");
+        }
+
+        if (userOptional.isEmpty()) {
+            throw new ConflictException("User not found for userId "+ userId);
+        }
+
+        var user = userOptional.get();
+
+        if (file != null) {
+            var fileSaved = cloudinaryService.upload(file);
+            var url = fileSaved.get("url");
+            user.setProfile_image(url.toString());
+        }
+
+        if (userDto != null) {
+            if (userDto.getName() != null) {
+                user.setName(userDto.getName());
+            }
+            if (userDto.getSurname() != null) {
+                user.setSurname(userDto.getSurname());
+            }
+            if (userDto.getNickname() != null) {
+                var userNickname = userRepository.findByNickname(userDto.getNickname());
+                if (userNickname == null || userNickname.getId() == user.getId()) {
+                    user.setNickname(userDto.getNickname());
+                } else {
+                    throw new ConflictException("Existing nickname");
+                }
+            }
+        }
+
+        var userUpdated = userRepository.save(user);
+        return UserConverter.fromUserEntityToUserDto(userUpdated);
     }
 }
