@@ -11,6 +11,7 @@ com\dai\dai\service\impl\MovieServiceImpl$1.class
 com\dai\dai\client\movie\dto\Movies.class
 com\dai\dai\service\impl\MovieServiceImpl$4.class
 com\dai\dai\converter\user\UserConverter.class
+com\dai\dai\dto\user\dto\UserEditDto$UserEditDtoBuilder.class
 com\dai\dai\client\movie\dto\ImageList.class
 com\dai\dai\service\MovieService.class
 com\dai\dai\exception\UnauthorizedException.class
@@ -25,6 +26,7 @@ com\dai\dai\security\JwtRequestFilter.class
 com\dai\dai\dto\movie\response\GetMoviesResponse.class
 com\dai\dai\service\UserService.class
 com\dai\dai\dto\auth\request\LogOutRequest.class
+com\dai\dai\dto\user\dto\UserEditDto.class
 com\dai\dai\entity\UserEntity.class
 com\dai\dai\repository\UserRepository.class
 com\dai\dai\dto\movie\response\GetMoviesResponse$GetMoviesResponseBuilder.class

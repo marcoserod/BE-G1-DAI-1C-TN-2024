@@ -5,6 +5,7 @@ import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.PostUsersResponse;
 import com.dai.dai.dto.user.dto.FilmRatingDto;
 import com.dai.dai.dto.user.dto.UserDto;
+import com.dai.dai.dto.user.dto.UserEditDto;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -185,14 +187,17 @@ public class UserControllerImpl implements UserController {
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) })
     })
-    @PatchMapping
+    @PatchMapping({"/{userId}"})
     @Override
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
+    public ResponseEntity<UserDto> updateUser(@Valid @PathVariable(value = "userId" ) Integer userId,
+                                              @RequestPart(required = false, name = "userData") UserEditDto userDto,
+                                              @RequestPart(required = false, name = "profileImage") MultipartFile file,
                                               @Parameter(name = "Authorization", description = "Bearer token",
                                                       required = true, in = ParameterIn.HEADER,
                                                       schema = @Schema(type = "string", format = "Bearer"))
-                                              @RequestHeader(name = "Authorization") String accessToken) {
-        return null;
+                                              @RequestHeader(name = "Authorization") String accessToken) throws IOException {
+
+        return new ResponseEntity<>(userService.updateUser(userDto, file, userId), HttpStatus.OK);
     }
 
     @Operation(summary = "It rates a film by a user")

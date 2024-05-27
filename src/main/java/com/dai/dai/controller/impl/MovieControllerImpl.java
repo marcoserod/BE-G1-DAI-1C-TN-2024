@@ -36,7 +36,7 @@ public class MovieControllerImpl implements MovieController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = { @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Movie.class)))}),
+                            array = @ArraySchema(schema = @Schema(implementation = GetMoviesResponse.class)))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
@@ -125,11 +125,13 @@ public class MovieControllerImpl implements MovieController {
     public ResponseEntity<GetMoviesResponse> getMoviesByName(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "sortCriteria") String orderBy,
+            @Parameter(name = "filters", description = "Ingresar el id del genero a filtrar, separados por coma.", required = true, in = ParameterIn.QUERY,
+                    schema = @Schema(type = "string", format = "1,9,46"))
             @RequestParam(value = "filters", required = false) List<String> filters,
             @RequestParam(value = "page") Integer page,
             @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy), HttpStatus.OK);
+        return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy, page, filters), HttpStatus.OK);
     }
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 @Data
 public class ListMetadata {
-    Integer totalRecords;
+    Integer totalPages;
     Integer pageSize;
     Integer currentPage;
 }
