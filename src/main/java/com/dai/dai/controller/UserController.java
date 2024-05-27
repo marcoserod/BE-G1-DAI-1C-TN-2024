@@ -2,7 +2,11 @@ package com.dai.dai.controller;
 
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
+import com.dai.dai.dto.user.dto.UserEditDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 
 public interface UserController {
@@ -19,5 +23,6 @@ public interface UserController {
 
     ResponseEntity<Void> removeUser(Integer userID, String accessToken) throws IOException, InterruptedException;
 
-    ResponseEntity<UserDto> updateUser(UserDto userDto, String accessToken) throws IOException, InterruptedException;
+    ResponseEntity<UserDto> updateUser(Integer userId, UserEditDto userDto, MultipartFile file, String accessToken)
+            throws IOException, InterruptedException;
 }

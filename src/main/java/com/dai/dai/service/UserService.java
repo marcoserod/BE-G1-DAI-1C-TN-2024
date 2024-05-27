@@ -2,6 +2,8 @@ package com.dai.dai.service;
 
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
+import com.dai.dai.dto.user.dto.UserEditDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -17,4 +19,6 @@ public interface UserService {
     void removeFavorite(Integer userId, Integer filmId) throws IOException, InterruptedException;
 
     void removeUser(Integer userID) throws IOException, InterruptedException;
+
+    UserDto updateUser(UserEditDto userDto, MultipartFile file, Integer userId) throws IOException;
 }
