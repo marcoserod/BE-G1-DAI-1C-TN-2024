@@ -23,6 +23,7 @@ public interface UserController {
 
     ResponseEntity<Void> removeUser(Integer userID, String accessToken) throws IOException, InterruptedException;
 
-    ResponseEntity<UserDto> updateUser(Integer userId, UserEditDto userDto, MultipartFile file, String accessToken)
+    ResponseEntity<UserDto> updateUser(Integer userId, String name, String surname, String nickname,
+                                       MultipartFile file, String accessToken)
             throws IOException, InterruptedException;
 }

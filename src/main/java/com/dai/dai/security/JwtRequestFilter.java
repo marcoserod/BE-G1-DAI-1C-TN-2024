@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -75,14 +77,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 throw new UnauthorizedException("El usuario no posee una sesión activa.");
             }
 
-
-
-
         } catch (JwtException | IllegalArgumentException e) {
-            log.error("El token es invalido o está expirado.");
-            throw new UnauthorizedException("El token es invalido o está expirado.");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write("{\"message\": \"Invalid or expired token\"}");
+            return;
         } catch (Exception e) {
-            throw new InternalServerErrorException("Ocurrió un Internal Server Error.");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write("{\"message\": \"Invalid or expired token\"}");
+            return;
         }
 
         chain.doFilter(request, response);
