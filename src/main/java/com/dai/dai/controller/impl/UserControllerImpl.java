@@ -190,14 +190,16 @@ public class UserControllerImpl implements UserController {
     @PatchMapping({"/{userId}"})
     @Override
     public ResponseEntity<UserDto> updateUser(@Valid @PathVariable(value = "userId" ) Integer userId,
-                                              @RequestPart(required = false, name = "userData") UserEditDto userDto,
+                                              @RequestPart(required = false, name = "name") String name,
+                                              @RequestPart(required = false, name = "surname") String surname,
+                                              @RequestPart(required = false, name = "nickname") String nickname,
                                               @RequestPart(required = false, name = "profileImage") MultipartFile file,
                                               @Parameter(name = "Authorization", description = "Bearer token",
                                                       required = true, in = ParameterIn.HEADER,
                                                       schema = @Schema(type = "string", format = "Bearer"))
                                               @RequestHeader(name = "Authorization") String accessToken) throws IOException {
 
-        return new ResponseEntity<>(userService.updateUser(userDto, file, userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUser(name, surname, nickname, file, userId), HttpStatus.OK);
     }
 
     @Operation(summary = "It rates a film by a user")

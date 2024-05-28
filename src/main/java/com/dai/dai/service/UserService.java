@@ -20,5 +20,5 @@ public interface UserService {
 
     void removeUser(Integer userID) throws IOException, InterruptedException;
 
-    UserDto updateUser(UserEditDto userDto, MultipartFile file, Integer userId) throws IOException;
+    UserDto updateUser(String name, String surname, String nickname, MultipartFile file, Integer userId) throws IOException;
 }
