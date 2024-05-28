@@ -180,7 +180,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserEditDto userDto, MultipartFile file, Integer userId) throws IOException {
+    public UserDto updateUser(String name, String surname, String nickname,
+                              MultipartFile file, Integer userId) throws IOException {
 
         Optional<UserEntity> userOptional;
 
@@ -201,22 +202,24 @@ public class UserServiceImpl implements UserService {
             var fileSaved = cloudinaryService.upload(file);
             var url = fileSaved.get("url");
             user.setProfile_image(url.toString());
+            log.info("Image updated");
         }
 
-        if (userDto != null) {
-            if (userDto.getName() != null) {
-                user.setName(userDto.getName());
-            }
-            if (userDto.getSurname() != null) {
-                user.setSurname(userDto.getSurname());
-            }
-            if (userDto.getNickname() != null) {
-                var userNickname = userRepository.findByNickname(userDto.getNickname());
-                if (userNickname == null || userNickname.getId() == user.getId()) {
-                    user.setNickname(userDto.getNickname());
-                } else {
-                    throw new ConflictException("Existing nickname");
-                }
+        if (name != null) {
+            user.setName(name);
+            log.info("Name updated");
+        }
+        if (surname != null) {
+            user.setSurname(surname);
+            log.info("Surname updated");
+        }
+        if (nickname != null) {
+            var userNickname = userRepository.findByNickname(nickname);
+            if (userNickname == null || userNickname.getId() == user.getId()) {
+                user.setNickname(nickname);
+                log.info("Nickname updated");
+            } else {
+                throw new ConflictException("Existing nickname");
             }
         }
 
