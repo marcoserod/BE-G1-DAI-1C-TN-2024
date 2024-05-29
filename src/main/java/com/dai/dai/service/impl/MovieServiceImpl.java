@@ -115,6 +115,7 @@ public class MovieServiceImpl implements MovieService {
             movieFilteredList = filterGenres(filters, response.getMovies());
         }
         int totalPages = (int) Math.ceil((float) movieFilteredList.size() / pageSize);
+        int totalRecords = movieFilteredList.size();
         List<Movie> sortedResponse;
         switch (orderBy){
             case "date:desc,rate:desc":
@@ -124,7 +125,7 @@ public class MovieServiceImpl implements MovieService {
                 sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
-                        .metadata(setMetadata(sortedResponse, page, totalPages))
+                        .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             case "date:asc,rate:desc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
@@ -133,7 +134,7 @@ public class MovieServiceImpl implements MovieService {
                 sortedResponse = paginate(page, movieFilteredList,totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
-                        .metadata(setMetadata(sortedResponse, page, totalPages))
+                        .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             case "date:desc,rate:asc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
@@ -142,7 +143,7 @@ public class MovieServiceImpl implements MovieService {
                 sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
-                        .metadata(setMetadata(sortedResponse, page, totalPages))
+                        .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             case "date:asc,rate:asc":
                 log.info("Las busquedas se van a organizar con el siguiente criterio: " +
@@ -151,7 +152,7 @@ public class MovieServiceImpl implements MovieService {
                 sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
                         .movies(sortedResponse)
-                        .metadata(setMetadata(sortedResponse, page, totalPages))
+                        .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             default:
                 log.error("Criterio de ordenamiento desconocido.");
@@ -263,10 +264,11 @@ public class MovieServiceImpl implements MovieService {
         }
     }
 
-    private ListMetadata setMetadata( List<Movie> movies, Integer page, Integer totalPages){
+    private ListMetadata setMetadata( List<Movie> movies, Integer page, Integer totalPages, Integer totalRecords){
         return ListMetadata.builder()
                 .currentPage(page)
                 .pageSize(movies.size())
+                .totalRecords(totalRecords)
                 .totalPages(totalPages)
                 .build();
     }
