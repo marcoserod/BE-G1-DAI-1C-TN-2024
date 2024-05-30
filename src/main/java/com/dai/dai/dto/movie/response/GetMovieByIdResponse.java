@@ -1,18 +1,17 @@
-package com.dai.dai.client.movie.dto;
+package com.dai.dai.dto.movie.response;
 
+import com.dai.dai.client.movie.dto.Genre;
+import com.dai.dai.client.movie.dto.Movie;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Movie {
+@Data
+public class GetMovieByIdResponse {
     private Long id;
     private String title;
     private String poster_path;// (foto)
@@ -29,14 +28,15 @@ public class Movie {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Movie> known_for;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty(value = "genre_ids")
-    private List<Integer> genres;
+    private List<Genre> genres;
     @JsonProperty(value = "runtime")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long duration;
     @JsonProperty(value = "tagline")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subtitle;
-
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean adult;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String backdrop_path;
 }

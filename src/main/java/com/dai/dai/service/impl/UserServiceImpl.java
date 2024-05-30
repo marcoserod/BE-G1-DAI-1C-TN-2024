@@ -2,6 +2,8 @@ package com.dai.dai.service.impl;
 
 import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.converter.user.UserConverter;
+import com.dai.dai.dto.movie.response.GetFavoriteMoviesResponse;
+import com.dai.dai.dto.movie.response.GetMovieByIdResponse;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.entity.UserEntity;
@@ -106,8 +108,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GetMoviesResponse getFavorites(Integer userID) {
-        List<Movie> movies = new ArrayList<>();
+    public GetFavoriteMoviesResponse getFavorites(Integer userID) {
+        List<GetMovieByIdResponse> movies = new ArrayList<>();
         Optional<UserEntity> userOptional;
 
         try {
@@ -127,7 +129,7 @@ public class UserServiceImpl implements UserService {
                var movie = movieService.getMovieById(Integer.valueOf(favoriteFilm.getFilm_id()));
                movies.add(movie.getMovie());
             }
-            return GetMoviesResponse.builder()
+            return GetFavoriteMoviesResponse.builder()
                     .movies(movies)
                     .build();
         } catch (Exception e) {
