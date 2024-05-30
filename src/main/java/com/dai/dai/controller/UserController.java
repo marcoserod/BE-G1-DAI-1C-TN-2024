@@ -26,4 +26,6 @@ public interface UserController {
     ResponseEntity<UserDto> updateUser(Integer userId, String name, String surname, String nickname,
                                        MultipartFile file, String accessToken)
             throws IOException, InterruptedException;
+
+
 }

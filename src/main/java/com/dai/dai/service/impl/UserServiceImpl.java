@@ -9,6 +9,7 @@ import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
 import com.dai.dai.exception.handler.ConflictException;
+import com.dai.dai.repository.SessionRepository;
 import com.dai.dai.repository.UserFavoriteRepository;
 import com.dai.dai.repository.UserRepository;
 import com.dai.dai.service.MovieService;
@@ -27,6 +28,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
+    SessionRepository sessionRepository;
     UserFavoriteRepository userFavoriteRepository;
     MovieService movieService;
     CloudinaryServiceImpl cloudinaryService;
@@ -49,7 +51,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new RuntimeException("User not found for userId "+userId);
         }
-
 
     }
 
@@ -176,7 +177,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Integer userID) throws IOException, InterruptedException {
-        //TODO
+        log.info("Eliminando el usuario de id: {}", userID);
+        Optional<UserEntity> user;
+        try {
+          user = userRepository.findById(userID);
+          if (user.isEmpty()){
+              log.error("No se encontró el usuario solicitado.");
+              throw new TmdbNotFoundException("No se encontró el usuario solicitado.");
+          }
+        } catch (Exception e){
+            log.error("Ocurrió un error al buscar el usuario en la base de datos.");
+            throw new RuntimeException("Ocurrió un error al buscar el usuario en la base de datos.");
+        }
+        try {
+            log.info("Eliminando sesión...");
+            var session = sessionRepository.findByUserEmail(user.get().getEmail());
+            if (session.isEmpty()){
+                log.error("No se encontró la sesión que se desea eliminar.");
+                throw new TmdbNotFoundException("No se encontró la sesión que se desea eliminar.");
+            }
+            sessionRepository.deleteById(session.get().getId());
+            log.info("Se eliminó la sesión del usuario correctamente.");
+        } catch (Exception e){
+            log.error("Ocurrió un error al Eliminar la sesión del usuario.");
+            throw new RuntimeException("Ocurrió un error al Eliminar la sesión del usuario.");
+        }
+        try {
+            userRepository.deleteById(userID);
+            log.info("Se eliminó el usuario correctamente.");
+        } catch (Exception e){
+            log.error("Ocurrió un error al Eliminar el usuario.");
+            throw new RuntimeException("Ocurrió un error al Eliminar el usuario.");
+        }
     }
 
     @Override
@@ -200,7 +232,7 @@ public class UserServiceImpl implements UserService {
 
         if (file != null) {
             var fileSaved = cloudinaryService.upload(file);
-            var url = fileSaved.get("url");
+            var url = fileSaved.get("secure_url");
             user.setProfile_image(url.toString());
             log.info("Image updated");
         }
