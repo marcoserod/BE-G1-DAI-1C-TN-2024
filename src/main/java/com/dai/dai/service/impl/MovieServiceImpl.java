@@ -42,15 +42,15 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del metodo getNowPlayingMovies() .");
+        log.info("[MovieService] Execution of the method getNowPlayingMovies() has started.");
         var response = movieDbClient.getNowPlaying(page);
-        log.info("[MovieService] Se recuperan las peliculas correctamente. Cantidad de peliculas: {}.", response.getMovies().size());
+        log.info("[MovieService] Movies retrieved successfully. Number of movies: {}.", response.getMovies().size());
         return response;
     }
 
     @Override
     public GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del metodo getMovieById(). Id: {}.",movieId);
+        log.info("[MovieService] Execution of the method getMovieById() has started. Id: {}.",movieId);
         Movie movieDetails = null;
         ImageList movieImages = null;
         MovieCast movieCast = null;
@@ -58,25 +58,25 @@ public class MovieServiceImpl implements MovieService {
         try{
             movieDetails = movieDbClient.getMovieById(movieId);
         } catch (Exception e) {
-            log.error("No se encontró la pelicula id: {}", movieId);
-            throw new TmdbNotFoundException("No se encontraron detalles para la pelicula solicitada.");
+            log.error("The movie with id: {} was not found.", movieId);
+            throw new TmdbNotFoundException("No details were found for the requested movie.");
         }
         try{
             movieImages = movieDbClient.getMovieImagesByMovieId(movieId);
         } catch (Exception e) {
-            log.error("No se encontraron imagenes para la pelicula de id: {}", movieId);
+            log.error("No images were found for the movie with id: {}", movieId);
         }
         try{
             movieCast = movieDbClient.getMovieCastByMovieId(movieId);
         } catch (Exception e) {
-            log.error("No se encontró el  para la pelicula de id: {}", movieId);
+            log.error("No cast found for the movie with ID: {}", movieId);
         }
         try{
             movieTrailer = movieDbClient.getMovieTrailerById(movieId);
         } catch (Exception e) {
-            log.error("No se encontró el  para la pelicula de id: {}", movieId);
+            log.error("No trailer found for the movie with ID: {}", movieId);
         }
-        log.info("[MovieService] Se recupera el detalle de la pelicula {} correctamente.", movieDetails.getTitle());
+        log.info("[MovieService] Movie details for {} retrieved successfully.", movieDetails.getTitle());
         return GetMovieDetailsResponse.builder()
                 .movie(movieDetails)
                 .movieCast(movieCast)
@@ -87,9 +87,9 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public GetAvailableMovieGenresResponse getAvailableMovieGenres() throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del metodo getAvailableMovieGenres().");
+        log.info("[MovieService] Execution of the method getAvailableMovieGenres() has started.");
         var response = movieDbClient.getAvailableMovieGenres();
-        log.info("[MovieService] Se recuperan la lista de los generos. Cantidad de generos obtenidos; {}.", response.size());
+        log.info("[MovieService] The list of genres has been retrieved. Number of genres obtained: {}.", response.size());
 
 
         return GetAvailableMovieGenresResponse.builder()
@@ -99,11 +99,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public GetMoviesResponse getMoviesByName(String name, String orderBy, Integer page, List<String> filters) throws IOException, InterruptedException {
-        log.info("[MovieService] Comienza la ejecución del método getMoviesByName(). name: {}.", name);
+        log.info("[MovieService] Execution of the method getMoviesByName() has started. name: {}.", name);
 
         //No permite espacios para hacer la query, por eso se cambia el espacio por un 20.
         String nameAdapted = name.replace(" ", "%20");
-        log.info("[MovieService] Nombre adaptado: {}.", name);
+        log.info("[MovieService] Adapted name: {}.", name);
 
         //Recupera todas las peliculas que encuentre.
         var response = movieDbClient.getMoviesByName(nameAdapted);
@@ -119,8 +119,8 @@ public class MovieServiceImpl implements MovieService {
         List<Movie> sortedResponse;
         switch (orderBy){
             case "date:desc,rate:desc":
-                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                        "Fechas descendente y Rating descendente.");
+                log.info("Searches will be sorted according to the following criterion: " +
+                        "Descending dates and descending ratings.");
                 sortMoviesByReleaseDateDescendingAndRatingDescending(movieFilteredList);
                 sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
@@ -128,8 +128,8 @@ public class MovieServiceImpl implements MovieService {
                         .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             case "date:asc,rate:desc":
-                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                        "Fechas Ascendente y Rating descendente.");
+                log.info("Searches will be sorted according to the following criterion: " +
+                        "Ascending dates and descending ratings.");
                 sortMoviesByReleaseDateAscendingAndRatingDescending(movieFilteredList);
                 sortedResponse = paginate(page, movieFilteredList,totalPages);
                 return GetMoviesResponse.builder()
@@ -137,8 +137,8 @@ public class MovieServiceImpl implements MovieService {
                         .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             case "date:desc,rate:asc":
-                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                        "Fechas descendente y Rating Ascendente.");
+                log.info("Searches will be sorted according to the following criterion: " +
+                        "Descending dates and ascending ratings.");
                 sortMoviesByReleaseDateDescendingAndRatingAscending(movieFilteredList);
                 sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
@@ -146,8 +146,8 @@ public class MovieServiceImpl implements MovieService {
                         .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             case "date:asc,rate:asc":
-                log.info("Las busquedas se van a organizar con el siguiente criterio: " +
-                        "Fechas descendente y Rating Ascendente.");
+                log.info("Searches will be sorted according to the following criterion: " +
+                        "Descending dates and ascending ratings.");
                 sortMoviesByReleaseDateAscendingAndRatingAscending(movieFilteredList);
                 sortedResponse = paginate(page, movieFilteredList, totalPages);
                 return GetMoviesResponse.builder()
@@ -155,8 +155,8 @@ public class MovieServiceImpl implements MovieService {
                         .metadata(setMetadata(sortedResponse, page, totalPages, totalRecords))
                         .build();
             default:
-                log.error("Criterio de ordenamiento desconocido.");
-                throw new SortCriteriaNotAllowedException("Criterio de ordenamiento desconocido.");
+                log.error("Unknown sorting criterion.");
+                throw new SortCriteriaNotAllowedException("Unknown sorting criterion.");
         }
 
     }
@@ -168,7 +168,7 @@ public class MovieServiceImpl implements MovieService {
                     list.get(i).getOverview() == null || list.get(i).getOverview().isEmpty() ||
                     list.get(i).getVote_count() == null || list.get(i).getVote_count().equals(0L) ||
                     list.get(i).getPoster_path() == null || list.get(i).getPoster_path().isEmpty()){
-                log.info("Se eliminó la pelicula de id: {}", list.get(i).getId());
+                log.info("The movie with id: {} was deleted.", list.get(i).getId());
                 list.remove(i);
             }
         }
@@ -260,7 +260,7 @@ public class MovieServiceImpl implements MovieService {
             return format.parse(releaseDateStr);
         } catch (ParseException e) {
             // Maneja la excepción de análisis (por ejemplo, registra el error, devuelve null)
-            throw new RuntimeException("Error al analizar la fecha de lanzamiento: " + releaseDateStr, e);
+            throw new RuntimeException("Error parsing release date: " + releaseDateStr, e);
         }
     }
 
@@ -275,7 +275,7 @@ public class MovieServiceImpl implements MovieService {
 
 
     private List<Movie> paginate(Integer page, List<Movie> movies, Integer totalPages){
-        log.info("Se generar la pagina {} de las peliculas.", page);
+        log.info("Page {} of movies generated.", page);
         int firstItem = page * pageSize - (pageSize);
         int lastItem;
         if (totalPages.equals(page) || totalPages.equals(0)){

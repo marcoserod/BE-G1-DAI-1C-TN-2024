@@ -4,7 +4,6 @@ import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.converter.user.UserConverter;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
-import com.dai.dai.dto.user.dto.UserEditDto;
 import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
@@ -35,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserInfoById(Integer userId) {
-        log.info("[UserService] Comienza la ejecución del metodo getUserInfoById(). UserId: {}.",userId);
+        log.info("[UserService] Execution of the method getUserInfoById() has started. UserId: {}.",userId);
         Optional<UserEntity> UserResponse = null;
 
         try{
@@ -177,37 +176,37 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Integer userID) throws IOException, InterruptedException {
-        log.info("Eliminando el usuario de id: {}", userID);
+        log.info("Deleting the user with ID: {}", userID);
         Optional<UserEntity> user;
         try {
           user = userRepository.findById(userID);
           if (user.isEmpty()){
-              log.error("No se encontró el usuario solicitado.");
-              throw new TmdbNotFoundException("No se encontró el usuario solicitado.");
+              log.error("The requested user was not found.");
+              throw new TmdbNotFoundException("The requested user was not found..");
           }
         } catch (Exception e){
-            log.error("Ocurrió un error al buscar el usuario en la base de datos.");
-            throw new RuntimeException("Ocurrió un error al buscar el usuario en la base de datos.");
+            log.error("There was an error while searching for the user in the database.");
+            throw new RuntimeException("There was an error while searching for the user in the database.");
         }
         try {
-            log.info("Eliminando sesión...");
+            log.info("Deleting session...");
             var session = sessionRepository.findByUserEmail(user.get().getEmail());
             if (session.isEmpty()){
-                log.error("No se encontró la sesión que se desea eliminar.");
-                throw new TmdbNotFoundException("No se encontró la sesión que se desea eliminar.");
+                log.error("The session you want to delete was not found.");
+                throw new TmdbNotFoundException("The session you want to delete was not found.");
             }
             sessionRepository.deleteById(session.get().getId());
-            log.info("Se eliminó la sesión del usuario correctamente.");
+            log.info("The user's session was successfully deleted.");
         } catch (Exception e){
-            log.error("Ocurrió un error al Eliminar la sesión del usuario.");
-            throw new RuntimeException("Ocurrió un error al Eliminar la sesión del usuario.");
+            log.error("An error occurred while deleting the user's session.");
+            throw new RuntimeException("An error occurred while deleting the user's session.");
         }
         try {
             userRepository.deleteById(userID);
-            log.info("Se eliminó el usuario correctamente.");
+            log.info("The user was successfully deleted.");
         } catch (Exception e){
-            log.error("Ocurrió un error al Eliminar el usuario.");
-            throw new RuntimeException("Ocurrió un error al Eliminar el usuario.");
+            log.error("An error occurred while deleting the user.");
+            throw new RuntimeException("An error occurred while deleting the user.");
         }
     }
 
