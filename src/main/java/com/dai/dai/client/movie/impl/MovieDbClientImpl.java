@@ -69,6 +69,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                     .collect(Collectors.toList());
 
             var metadata = ListMetadata.builder()
+                    .totalRecords(movieListApiExt.getTotal_results())
                     .totalPages(movieListApiExt.getTotal_pages())
                     .currentPage(page)
                     .pageSize(20)

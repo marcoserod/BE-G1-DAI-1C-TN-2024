@@ -4,11 +4,11 @@ import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.converter.user.UserConverter;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
-import com.dai.dai.dto.user.dto.UserEditDto;
 import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
 import com.dai.dai.exception.handler.ConflictException;
+import com.dai.dai.repository.SessionRepository;
 import com.dai.dai.repository.UserFavoriteRepository;
 import com.dai.dai.repository.UserRepository;
 import com.dai.dai.service.MovieService;
@@ -27,13 +27,14 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
+    SessionRepository sessionRepository;
     UserFavoriteRepository userFavoriteRepository;
     MovieService movieService;
     CloudinaryServiceImpl cloudinaryService;
 
     @Override
     public UserDto getUserInfoById(Integer userId) {
-        log.info("[UserService] Comienza la ejecución del metodo getUserInfoById(). UserId: {}.",userId);
+        log.info("[UserService] Execution of the method getUserInfoById() has started. UserId: {}.",userId);
         Optional<UserEntity> UserResponse = null;
 
         try{
@@ -49,7 +50,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new RuntimeException("User not found for userId "+userId);
         }
-
 
     }
 
@@ -176,7 +176,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Integer userID) throws IOException, InterruptedException {
-        //TODO
+        log.info("Deleting the user with ID: {}", userID);
+        Optional<UserEntity> user;
+        try {
+          user = userRepository.findById(userID);
+          if (user.isEmpty()){
+              log.error("The requested user was not found.");
+              throw new TmdbNotFoundException("The requested user was not found..");
+          }
+        } catch (Exception e){
+            log.error("There was an error while searching for the user in the database.");
+            throw new RuntimeException("There was an error while searching for the user in the database.");
+        }
+        try {
+            log.info("Deleting session...");
+            var session = sessionRepository.findByUserEmail(user.get().getEmail());
+            if (session.isEmpty()){
+                log.error("The session you want to delete was not found.");
+                throw new TmdbNotFoundException("The session you want to delete was not found.");
+            }
+            sessionRepository.deleteById(session.get().getId());
+            log.info("The user's session was successfully deleted.");
+        } catch (Exception e){
+            log.error("An error occurred while deleting the user's session.");
+            throw new RuntimeException("An error occurred while deleting the user's session.");
+        }
+        try {
+            userRepository.deleteById(userID);
+            log.info("The user was successfully deleted.");
+        } catch (Exception e){
+            log.error("An error occurred while deleting the user.");
+            throw new RuntimeException("An error occurred while deleting the user.");
+        }
     }
 
     @Override
@@ -200,7 +231,7 @@ public class UserServiceImpl implements UserService {
 
         if (file != null) {
             var fileSaved = cloudinaryService.upload(file);
-            var url = fileSaved.get("url");
+            var url = fileSaved.get("secure_url");
             user.setProfile_image(url.toString());
             log.info("Image updated");
         }

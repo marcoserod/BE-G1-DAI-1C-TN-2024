@@ -10,4 +10,5 @@ public class ListMetadata {
     Integer totalPages;
     Integer pageSize;
     Integer currentPage;
+    Integer totalRecords;
 }

@@ -15,4 +15,6 @@ public interface SessionRepository extends JpaRepository<SessionEntity, Integer>
 
     Optional<SessionEntity> findByUserEmail(String user_email);
 
+    @Override
+    void deleteById(Integer integer);
 }

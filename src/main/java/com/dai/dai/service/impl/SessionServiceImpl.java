@@ -68,15 +68,15 @@ public class SessionServiceImpl implements SessionService {
                     .build();
             googleToken = verifier.verify(authenticationRequest);
         } catch (Exception e) {
-            log.error("Ocurrió un error al validar el GoogleAuth Token.");
-            throw new InternalServerErrorException("Ocurrió un error al validar el GoogleAuth Token.");
+            log.error("An error occurred while validating the GoogleAuth Token.");
+            throw new InternalServerErrorException("An error occurred while validating the GoogleAuth Token.");
         }
 
         if (googleToken == null) {
-            log.error("El Google Auth Token introducido no es valido.");
-            throw new UnauthorizedException("El Google Auth Token introducido no es valido.");
+            log.error("The Google Auth Token entered is not valid.");
+            throw new UnauthorizedException("The Google Auth Token entered is not valid.");
         }
-        log.error("El Google Auth Token recibido es válido");
+        log.error("The received Google Auth Token is valid.");
 
         var payload = googleToken.getPayload();
 
@@ -89,13 +89,13 @@ public class SessionServiceImpl implements SessionService {
         try {
             user = userRepository.findByEmail(email);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Ocurrió un error al consultar la base de datos.");
+            throw new InternalServerErrorException("An error occurred while querying the database.");
         }
         Integer userId;
         String moviePlayToken;
         String refreshToken;
         if (user == null) {
-            log.info("[generateToken] El usuario de email: {} no se encuentra registrado, comienza el proceso de registro.",email);
+            log.info("[generateToken] The user with email: {} is not registered, registration process begins.",email);
             var randomString = UUID.randomUUID().toString();
             var nickname = name + randomString.substring(0, 4);
             try {
@@ -105,12 +105,12 @@ public class SessionServiceImpl implements SessionService {
                         .profileImage(pictureUrl)
                         .surname(surname).build());
             } catch (Exception e) {
-                log.error("Ocurrió un error al crear el usuario.");
-                throw new InternalServerErrorException("Ocurrió un error al crear el usuario.");
+                log.error("An error occurred while creating the user.");
+                throw new InternalServerErrorException("An error occurred while creating the user.");
             }
             moviePlayToken = createJwtToken(email);
             refreshToken = createRefreshToken(email);
-            log.info("Generando sesión...");
+            log.info("Generating session...");
             SessionEntity sessionEntity = new SessionEntity();
             sessionEntity.setToken(moviePlayToken);
             sessionEntity.setRefreshToken(refreshToken);
@@ -118,21 +118,21 @@ public class SessionServiceImpl implements SessionService {
             try {
                 sessionRepository.save(sessionEntity);
             } catch (Exception e) {
-                throw new InternalServerErrorException("Ocurrió un error al persistir la sesión en la base de datos.");
+                throw new InternalServerErrorException("An error occurred while persisting the session in the database.");
             }
         } else {
-            log.info("[generateToken] Iniciando sesión para el usuario de email: {}.",email);
+            log.info("[generateToken] Initiating session for the user with email: {}.",email);
             userId = user.getId();
             Optional<SessionEntity> userSession;
             try {
                 userSession = sessionRepository.findByUserEmail(user.getEmail());
             } catch (Exception e) {
-                log.error("Ocurrió un error al recuperar la sesión en la base de datos.");
-                throw new InternalServerErrorException("Ocurrió un error al recuperar la sesión en la base de datos.");
+                log.error("An error occurred while retrieving the session from the database.");
+                throw new InternalServerErrorException("An error occurred while retrieving the session from the database.");
             }
             if (userSession.isEmpty()){
-                log.error("No se encontró la sesión para el usuario de email: {}.",email);
-                throw new Exception("No se encontró la sesión para el usuario.");
+                log.error("No session found for the user with email: {}.",email);
+                throw new Exception("No session found for the user.");
             } else {
                 SessionEntity newLoginSession = userSession.get();
                 //Con el nuevo login se genera un nuevo moviePlayToken. Se mantiene el refreshToken.
@@ -143,8 +143,8 @@ public class SessionServiceImpl implements SessionService {
                     //Se updatea la session de ese usuario.
                     sessionRepository.save(userSession.get());
                 } catch (Exception e) {
-                    log.error("Ocurrió un error al persistir la sesión en la base de datos.");
-                    throw new InternalServerErrorException("Ocurrió un error al persistir la sesión en la base de datos.");
+                    log.error("An error occurred while persisting the session in the database.");
+                    throw new InternalServerErrorException("An error occurred while persisting the session in the database.");
                 }
             }
         }
@@ -154,7 +154,7 @@ public class SessionServiceImpl implements SessionService {
                 .moviePlayToken(moviePlayToken)
                 .refreshToken(refreshToken)
                 .build();
-        log.info("Finaliza el flujo. Se generan los tokens correctamente.");
+        log.info("Flow ends. Tokens generated successfully.");
         return authResponse;
 
     }
@@ -162,16 +162,16 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public JwtResponse refreshToken(String refreshToken) throws Exception {
         Claims userInfo = decodeToken(refreshToken);
-        log.info("[refreshToken] Se actualiza la sesión para el usuario de email: {}",userInfo.getSubject());
+        log.info("[refreshToken] Session updated for the user with email: {}",userInfo.getSubject());
         Optional<SessionEntity> sessionOptional;
         try{
             sessionOptional = sessionRepository.findByUserEmail(userInfo.getSubject());
         } catch (Exception e) {
-            log.error("Ocurrió un error al consultar la base de datos.");
-            throw new InternalServerErrorException("Ocurrió un error al consultar la base de datos.");
+            log.error("An error occurred while querying the database.");
+            throw new InternalServerErrorException("An error occurred while querying the database.");
         }
         if (sessionOptional.isEmpty()){
-            log.error("No se encontró la sesión del usuario.");
+            log.error("UserSession Not Found.");
             throw new Exception("UserSession Not Found");
         }
         SessionEntity session = sessionOptional.get();
@@ -180,7 +180,7 @@ public class SessionServiceImpl implements SessionService {
             //Se updatea la session de ese usuario.
             sessionRepository.save(session);
         } catch (Exception e ){
-            throw new InternalServerErrorException("Ocurrió un error al persistir la sesión en la base de datos.");
+            throw new InternalServerErrorException("An error occurred while persisting the session in the database.");
         }
         log.info("Session token: {}", session.getToken());
         return JwtResponse.builder()
@@ -192,13 +192,13 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public void logout(String refreshToken) throws Exception {
         Claims userInfo = decodeToken(refreshToken);
-        log.info("Se cierra la sesión para el usuario de email: {}",userInfo.getSubject());
+        log.info("The session for the user with email: {} has been closed.",userInfo.getSubject());
         Optional<SessionEntity> session;
         try{
             session = sessionRepository.findByUserEmail(userInfo.getSubject());
         } catch (Exception e) {
-            log.error("Ocurrió un error al consultar la base de datos.");
-            throw new InternalServerErrorException("Ocurrió un error al consultar la base de datos.");
+            log.error("An error occurred while querying the database.");
+            throw new InternalServerErrorException("An error occurred while querying the database.");
         }
         if (session.isPresent()){
             var loggedOutToken = Jwts.builder()
@@ -213,13 +213,13 @@ public class SessionServiceImpl implements SessionService {
             try {
                 sessionRepository.save(loggedOutSession);
             } catch (Exception e ){
-                throw new InternalServerErrorException("Ocurrió un error al cerrar la sesion.");
+                throw new InternalServerErrorException("An error occurred while closing the session.");
             }
         } else {
-            log.error("No se encontró la sesión.");
-            throw new InternalServerErrorException("No se encontró la sesión.");
+            log.error("Session not found.");
+            throw new InternalServerErrorException("Session not found.");
         }
-        log.info("Se cerró la sesión correctamente.");
+        log.info("The session was closed successfully.");
     }
 
 
