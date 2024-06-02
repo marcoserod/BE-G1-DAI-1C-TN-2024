@@ -2,6 +2,7 @@ package com.dai.dai.client.movie.impl;
 
 import com.dai.dai.client.movie.MovieDbClient;
 import com.dai.dai.client.movie.dto.*;
+import com.dai.dai.dto.movie.response.GetMovieByIdResponse;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.movie.response.ListMetadata;
 import com.dai.dai.exception.TmdbNotFoundException;
@@ -85,23 +86,23 @@ public class MovieDbClientImpl implements MovieDbClient {
     }
 
     @Override
-    public Movie getMovieById(Integer movieId) throws IOException, InterruptedException {
+    public GetMovieByIdResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getMovieById. Id: {}", movieId);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"?language=es"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
 
-        Movie movie = new Movie();
+        GetMovieByIdResponse movie;
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 404){
             log.error("Couldn't find the movie with ID: {}",movieId);
             throw new TmdbNotFoundException("Couldn't find the movie with ID: "+movieId);
         }
         try {
-            movie = objectMapper.readValue(response.body(), Movie.class);
+            movie = objectMapper.readValue(response.body(), GetMovieByIdResponse.class);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while consulting TMDB Api");
         }
@@ -207,6 +208,19 @@ public class MovieDbClientImpl implements MovieDbClient {
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         try {
             movieListApiExt = objectMapper.readValue(response.body(), Movies.class);
+            if(movieListApiExt.getTotal_results().equals(0)){
+                log.info("La busqueda no tiene resultados.");
+                return GetMoviesResponse.builder()
+                        .movies(new ArrayList<>())
+                        .metadata(
+                                ListMetadata.builder()
+                                        .totalPages(0)
+                                        .pageSize(0)
+                                        .totalRecords(0)
+                                        .currentPage(0)
+                                        .build())
+                        .build();
+            }
             if (movieListApiExt.getResults().get(0).getMedia_type().equals("person")) {
 
                 //Todas las peliculas del actor --> actorMovieList

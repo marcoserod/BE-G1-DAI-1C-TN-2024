@@ -1,5 +1,6 @@
 package com.dai.dai.client.movie.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -22,7 +23,9 @@ public class Celebrity {
     @JsonProperty(value = "credit_id")
     private String creditId;
     private int order; // Este campo podría ser específico para el elenco
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String department; // Este campo podría ser específico para el equipo
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String job; // Este campo podría ser específico para el equipo
 
 }

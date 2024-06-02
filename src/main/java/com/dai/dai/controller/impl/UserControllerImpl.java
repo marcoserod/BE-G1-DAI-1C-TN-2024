@@ -1,6 +1,8 @@
 package com.dai.dai.controller.impl;
 
 import com.dai.dai.controller.UserController;
+import com.dai.dai.dto.movie.response.GetAvailableMovieGenresResponse;
+import com.dai.dai.dto.movie.response.GetFavoriteMoviesResponse;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.PostUsersResponse;
 import com.dai.dai.dto.user.dto.FilmRatingDto;
@@ -11,6 +13,7 @@ import com.dai.dai.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -91,7 +94,9 @@ public class UserControllerImpl implements UserController {
 
     @Operation(summary = "It returns the movies from the user favorites")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Film favorite found."),
+            @ApiResponse(responseCode = "200", description = "Film favourites found.",
+                    content = { @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = GetFavoriteMoviesResponse.class)))}),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
@@ -104,7 +109,7 @@ public class UserControllerImpl implements UserController {
     })
     @GetMapping("/{userId}/favorites")
     @Override
-    public ResponseEntity<GetMoviesResponse> getFavorites(
+    public ResponseEntity<GetFavoriteMoviesResponse> getFavorites(
             @Valid @PathVariable(value = "userId" ) Integer userId,
             @Parameter(name = "Authorization", description = "Bearer token",
                     required = true, in = ParameterIn.HEADER,
