@@ -196,7 +196,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     @Override
     public GetMoviesResponse getMoviesByName(String name) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=true" +
+                .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=false" +
                         "&language=es&page=1"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
@@ -228,7 +228,8 @@ public class MovieDbClientImpl implements MovieDbClient {
                 log.info("Se van a recuperar peliculas asociadas al acrtor: {}.", movieListApiExt.getResults().get(0).getName());
                 var actorId = movieListApiExt.getResults().get(0).getId();
                 HttpRequest actorRequest = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es&page=1&with_cast="+actorId))
+                        .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es&include_adult=false&" +
+                                "page=1&with_cast="+actorId))
                         .header("accept", "application/json")
                         .header("Authorization", "Bearer "+accesToken)
                         .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -282,6 +283,10 @@ public class MovieDbClientImpl implements MovieDbClient {
                 }
                 log.info("La lista de peliculas del actor tiene: {} resultados.",actorMovieList.size() );
                 movieListReturned.setMovies(actorMovieList);
+                listMetadata.setPageSize(20);
+                listMetadata.setTotalRecords(movieListApiExt.getTotal_results());
+                listMetadata.setCurrentPage(1);
+                listMetadata.setTotalPages(movieListApiExt.getTotal_pages());
             }
             else{
                 List<Movie> movieNameList = new ArrayList<>();
@@ -296,7 +301,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 //Consultamos n veces tmdb para conseguir las n paginas que tienen de peliculas.
                 while (contadorPaginasTmbd <= totalPages ){
                     request = HttpRequest.newBuilder()
-                            .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=true" +
+                            .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=false" +
                                     "&language=es&page="+contadorPaginasTmbd))
                             .header("accept", "application/json")
                             .header("Authorization", "Bearer "+accesToken)
@@ -333,7 +338,10 @@ public class MovieDbClientImpl implements MovieDbClient {
                 }
                 log.info("La lista de peliculas tiene: {} resultados.",movieNameList.size() );
                 movieListReturned.setMovies(movieNameList);
-
+                listMetadata.setPageSize(20);
+                listMetadata.setTotalRecords(movieListApiExt.getTotal_results());
+                listMetadata.setCurrentPage(1);
+                listMetadata.setTotalPages(movieListApiExt.getTotal_pages());
 
             }
             movieListReturned.setMetadata(listMetadata);
