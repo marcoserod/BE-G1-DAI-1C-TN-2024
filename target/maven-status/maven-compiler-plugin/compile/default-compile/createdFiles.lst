@@ -15,6 +15,7 @@ com\dai\dai\dto\user\dto\UserEditDto$UserEditDtoBuilder.class
 com\dai\dai\client\movie\dto\ImageList.class
 com\dai\dai\service\MovieService.class
 com\dai\dai\exception\UnauthorizedException.class
+com\dai\dai\dto\movie\response\GetFavoriteMoviesResponse.class
 com\dai\dai\controller\impl\MovieControllerImpl.class
 com\dai\dai\controller\impl\AuthControllerImpl.class
 com\dai\dai\controller\AuthController.class
@@ -23,9 +24,11 @@ com\dai\dai\dto\auth\request\RefreshTokenRequest.class
 com\dai\dai\controller\impl\UserControllerImpl.class
 com\dai\dai\repository\SessionRepository.class
 com\dai\dai\security\JwtRequestFilter.class
+com\dai\dai\dto\movie\response\GetFavoriteMoviesResponse$GetFavoriteMoviesResponseBuilder.class
 com\dai\dai\dto\movie\response\GetMoviesResponse.class
 com\dai\dai\service\UserService.class
 com\dai\dai\dto\auth\request\LogOutRequest.class
+com\dai\dai\dto\movie\response\GetMovieByIdResponse.class
 com\dai\dai\dto\user\dto\UserEditDto.class
 com\dai\dai\entity\UserEntity.class
 com\dai\dai\repository\UserRepository.class

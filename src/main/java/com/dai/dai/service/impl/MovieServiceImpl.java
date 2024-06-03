@@ -2,10 +2,7 @@ package com.dai.dai.service.impl;
 
 
 import com.cloudinary.api.exceptions.NotFound;
-import com.dai.dai.client.movie.dto.ImageList;
-import com.dai.dai.client.movie.dto.Movie;
-import com.dai.dai.client.movie.dto.MovieCast;
-import com.dai.dai.client.movie.dto.MovieTrailer;
+import com.dai.dai.client.movie.dto.*;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.exception.SortCriteriaNotAllowedException;
@@ -51,16 +48,19 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
         log.info("[MovieService] Execution of the method getMovieById() has started. Id: {}.",movieId);
-        Movie movieDetails = null;
+        GetMovieByIdResponse movieDetails = null;
         ImageList movieImages = null;
         MovieCast movieCast = null;
         MovieTrailer movieTrailer = null;
+        List<Genre> genreList;
         try{
             movieDetails = movieDbClient.getMovieById(movieId);
         } catch (Exception e) {
             log.error("The movie with id: {} was not found.", movieId);
             throw new TmdbNotFoundException("No details were found for the requested movie.");
         }
+        genreList = movieDetails.getGenres();
+        movieDetails.setGenres(null);
         try{
             movieImages = movieDbClient.getMovieImagesByMovieId(movieId);
         } catch (Exception e) {
@@ -77,11 +77,14 @@ public class MovieServiceImpl implements MovieService {
             log.error("No trailer found for the movie with ID: {}", movieId);
         }
         log.info("[MovieService] Movie details for {} retrieved successfully.", movieDetails.getTitle());
+
+
         return GetMovieDetailsResponse.builder()
                 .movie(movieDetails)
                 .movieCast(movieCast)
                 .movieTrailer(movieTrailer)
                 .imageList(movieImages)
+                .genreList(genreList)
                 .build();
     }
 
@@ -107,6 +110,10 @@ public class MovieServiceImpl implements MovieService {
 
         //Recupera todas las peliculas que encuentre.
         var response = movieDbClient.getMoviesByName(nameAdapted);
+        if (response.getMetadata().getTotalRecords().equals(0)) {
+            log.info("Movies not found with name: {}",name);
+            return response;
+        }
         removeEmptyOrNullMovies(response.getMovies());
         List<Movie> movieFilteredList;
         if (filters == null || filters.isEmpty()){

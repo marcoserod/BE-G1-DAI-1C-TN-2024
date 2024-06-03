@@ -1,5 +1,6 @@
 package com.dai.dai.service;
 
+import com.dai.dai.dto.movie.response.GetFavoriteMoviesResponse;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.dto.user.dto.UserEditDto;
@@ -14,7 +15,7 @@ public interface UserService {
 
     void addFavorite(Integer userId, Integer filmId) throws IOException, InterruptedException;
 
-    GetMoviesResponse getFavorites(Integer userID) throws IOException, InterruptedException;
+    GetFavoriteMoviesResponse getFavorites(Integer userID) throws IOException, InterruptedException;
 
     void removeFavorite(Integer userId, Integer filmId) throws IOException, InterruptedException;
 
