@@ -9,6 +9,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\entity\UserFavoriteEntity.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetMovieDetailsResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\auth\request\RefreshTokenRequest.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetMovieByIdResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\service\impl\UserServiceImpl.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\controller\impl\UserControllerImpl.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\user\dto\FilmRatingDto.java
@@ -47,6 +48,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetAvailableMovieGenresResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\converter\user\UserConverter.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\MovieDbClient.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetFavoriteMoviesResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\service\impl\SessionServiceImpl.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\repository\SessionRepository.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\ImageList.java

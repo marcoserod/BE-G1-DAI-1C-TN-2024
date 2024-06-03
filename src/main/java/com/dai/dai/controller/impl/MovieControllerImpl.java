@@ -114,9 +114,9 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "401", description = "Unauthorized.",
                     content = { @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "404", description = "Movies not found",
+            @ApiResponse(responseCode = "200", description = "Movies not found. It returns an empty movie list.",
                     content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
+                    @Schema(implementation = GetMoviesResponse.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })

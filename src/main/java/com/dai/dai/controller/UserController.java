@@ -1,5 +1,6 @@
 package com.dai.dai.controller;
 
+import com.dai.dai.dto.movie.response.GetFavoriteMoviesResponse;
 import com.dai.dai.dto.movie.response.GetMoviesResponse;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.dto.user.dto.UserEditDto;
@@ -15,7 +16,7 @@ public interface UserController {
     ResponseEntity<Void> addFavorite(Integer userId, Integer filmId, String accessToken) throws IOException,
             InterruptedException;
 
-    ResponseEntity<GetMoviesResponse> getFavorites(Integer userId, String accessToken, Integer page)
+    ResponseEntity<GetFavoriteMoviesResponse> getFavorites(Integer userId, String accessToken, Integer page)
             throws IOException, InterruptedException;
 
     ResponseEntity<Void> removeFavorite(Integer userId, Integer filmId, String accessToken) throws IOException,

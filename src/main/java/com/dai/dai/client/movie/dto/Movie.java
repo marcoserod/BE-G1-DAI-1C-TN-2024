@@ -3,18 +3,14 @@ package com.dai.dai.client.movie.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Movie {
     private Long id;
@@ -41,6 +37,7 @@ public class Movie {
     @JsonProperty(value = "tagline")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subtitle;
+
 
 
 }
