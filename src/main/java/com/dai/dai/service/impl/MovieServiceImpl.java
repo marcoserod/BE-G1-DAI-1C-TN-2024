@@ -262,7 +262,7 @@ public class MovieServiceImpl implements MovieService {
 
 
     private static Date parseReleaseDate(String releaseDateStr) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // Ajusta el formato según sea necesario
+        SimpleDateFormat format = new SimpleDateFormat("yyyy"); // Ajusta el formato según sea necesario
         try {
             return format.parse(releaseDateStr);
         } catch (ParseException e) {
