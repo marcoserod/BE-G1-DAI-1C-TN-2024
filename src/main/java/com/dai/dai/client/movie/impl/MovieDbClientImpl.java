@@ -290,10 +290,19 @@ public class MovieDbClientImpl implements MovieDbClient {
             }
             else{
                 List<Movie> movieNameList = new ArrayList<>();
+                HttpRequest nameSearch = HttpRequest.newBuilder()
+                        .uri(URI.create("https://api.themoviedb.org/3/search/movie?query=" +name+
+                                "&include_adult=false&language=es&page=1"))
+                        .header("accept", "application/json")
+                        .header("Authorization", "Bearer "+accesToken)
+                        .method("GET", HttpRequest.BodyPublishers.noBody())
+                        .build();
+                HttpResponse<String> nameSearchresponse = HttpClient.newHttpClient().send(nameSearch, HttpResponse.BodyHandlers.ofString());
+                var searchList = objectMapper.readValue(nameSearchresponse.body(), Movies.class);
 
                 //Averiguamos cuantas peliculas tiene el actor en ls bbdd.
-                log.info("Cantidad de paginas: {}", movieListApiExt.getTotal_pages());
-                log.info("Cantidad de resultados: {}", movieListApiExt.getTotal_results());
+                log.info("Cantidad de paginas: {}", searchList.getTotal_pages());
+                log.info("Cantidad de resultados: {}", searchList.getTotal_results());
                 int totalPages = movieListApiExt.getTotal_pages();
                 int contadorPaginasTmbd = 1;
 
@@ -301,7 +310,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 //Consultamos n veces tmdb para conseguir las n paginas que tienen de peliculas.
                 while (contadorPaginasTmbd <= totalPages ){
                     request = HttpRequest.newBuilder()
-                            .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=false" +
+                            .uri(URI.create("https://api.themoviedb.org/3/search/movie?query="+name+"&include_adult=false" +
                                     "&language=es&page="+contadorPaginasTmbd))
                             .header("accept", "application/json")
                             .header("Authorization", "Bearer "+accesToken)
