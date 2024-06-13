@@ -252,7 +252,7 @@ public class UserServiceImpl implements UserService {
                 user.setNickname(nickname);
                 log.info("Nickname updated");
             } else {
-                throw new ConflictException("Existing nickname");
+                throw new ConflictException("El nombre de usuario ya está en uso.");
             }
         }
 
