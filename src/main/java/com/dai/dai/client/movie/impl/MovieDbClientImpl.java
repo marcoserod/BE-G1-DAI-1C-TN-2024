@@ -137,7 +137,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     @Override
     public MovieTrailer getMovieTrailerById(Integer movieId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/" + movieId + "/videos"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/" + movieId + "/videos?language=es"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer " + accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
