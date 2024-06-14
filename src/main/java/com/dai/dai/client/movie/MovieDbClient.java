@@ -16,4 +16,5 @@ public interface MovieDbClient {
     MovieCast getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException;
     GetMoviesResponse getMoviesByName(String name)  throws IOException, InterruptedException;
     ImageList getMovieImagesByMovieId(Integer movieId) throws IOException, InterruptedException;
+    PostMovieRatingResponse postMovieRating(Integer movieId, PostMovieRatingRequest request) throws IOException, InterruptedException;
 }

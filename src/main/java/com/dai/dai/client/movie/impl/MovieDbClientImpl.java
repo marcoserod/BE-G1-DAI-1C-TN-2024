@@ -394,6 +394,33 @@ public class MovieDbClientImpl implements MovieDbClient {
                 .images(imageList)
                 .build();
     }
-    
-    
+
+    @Override
+    public PostMovieRatingResponse postMovieRating(Integer movieId, PostMovieRatingRequest request) throws IOException, InterruptedException {
+        HttpRequest postRatingRequest = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"/rating"))
+                .header("accept", "application/json")
+                .header("Content-Type", "application/json;charset=utf-8")
+                .header("Authorization", "Bearer "+accesToken)
+                .method("POST", HttpRequest.BodyPublishers.ofString("{\"value\":"+request.getValue()+"}"))
+                .build();
+        PostMovieRatingResponse postMovieRatingResponse;
+        try{
+            HttpResponse<String> response = HttpClient.newHttpClient().send(postRatingRequest, HttpResponse.BodyHandlers.ofString());
+            postMovieRatingResponse = objectMapper.readValue(response.body(), PostMovieRatingResponse.class);
+
+            if (postMovieRatingResponse.getSuccess()){
+                log.info("Post rating status: "+ postMovieRatingResponse.getStatus_message());
+                return postMovieRatingResponse;
+            } else {
+                log.error("An error occurred when posting rating on TMDB: {}",postMovieRatingResponse.getStatus_message());
+                throw new RuntimeException(postMovieRatingResponse.getStatus_message());
+            }
+        }catch (Exception e){
+            log.error("An error occurred when posting rating on TMDB: {}", e.getMessage());
+            throw new RuntimeException("An error occurred when posting rating on TMDB.");
+        }
+    }
+
+
 }

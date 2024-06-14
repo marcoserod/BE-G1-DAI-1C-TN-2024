@@ -168,6 +168,15 @@ public class MovieServiceImpl implements MovieService {
 
     }
 
+    @Override
+    public PostMovieRatingResponse postMovieRating(Integer movieId, Integer rating) throws IOException, InterruptedException {
+        log.info("[MovieService] Execution of the method postMovieRating() has started.");
+        PostMovieRatingRequest postMovieRatingRequest = PostMovieRatingRequest.builder()
+                .value(rating.floatValue())
+                .build();
+        return movieDbClient.postMovieRating(movieId,postMovieRatingRequest);
+    }
+
 
     private void removeEmptyOrNullMovies(List<Movie> list) {
         for (int i = list.size()-1 ; i>=0 ; i-- ){
