@@ -1,7 +1,9 @@
 package com.dai.dai.controller.impl;
 
 import com.dai.dai.client.movie.dto.Movie;
+import com.dai.dai.client.movie.dto.PostMovieRatingResponse;
 import com.dai.dai.controller.MovieController;
+import com.dai.dai.dto.movie.request.RateMovieRequest;
 import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.exception.DaiException;
 import com.dai.dai.service.MovieService;
@@ -133,5 +135,24 @@ public class MovieControllerImpl implements MovieController {
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
         return new ResponseEntity<>(movieService.getMoviesByName(name, orderBy, page, filters), HttpStatus.OK);
+    }
+    @Operation(summary = "Rate a movie.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = PostMovieRatingResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+                    content = { @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = DaiException.class))) })
+    @PostMapping("/{movieId}/rate")
+    @Override
+    public ResponseEntity<PostMovieRatingResponse> postMovieRating(@PathVariable(value = "movieId") Integer movieId, @RequestBody RateMovieRequest request) throws IOException, InterruptedException {
+        return new ResponseEntity<>(movieService.postMovieRating(movieId,request.getRating()), HttpStatus.OK);
     }
 }

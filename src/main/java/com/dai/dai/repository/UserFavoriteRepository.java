@@ -20,4 +20,8 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavoriteEntity
     @Transactional
     @Query(value = "DELETE FROM user_favorites WHERE user_id = :userId AND film_id = :filmId", nativeQuery = true)
     void deleteByUserIdAndFilmId(@Param("userId") Integer userId, @Param("filmId") Integer filmId);
+
+    @Transactional
+    @Query(value = "SELECT * FROM user_favorites WHERE user_id = :userId AND film_id = :filmId", nativeQuery = true)
+    UserFavoriteEntity findByUserIdAndFilmId (Integer userId, Integer filmId);
 }
