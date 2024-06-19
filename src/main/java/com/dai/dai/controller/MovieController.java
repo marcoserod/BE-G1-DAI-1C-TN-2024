@@ -1,6 +1,8 @@
 package com.dai.dai.controller;
 
 
+import com.dai.dai.client.movie.dto.PostMovieRatingResponse;
+import com.dai.dai.dto.movie.request.RateMovieRequest;
 import com.dai.dai.dto.movie.response.*;
 import org.springframework.http.ResponseEntity;
 
@@ -19,4 +21,7 @@ public interface MovieController {
                                                       Integer page,
                                                       String accessToken)
             throws IOException, InterruptedException;
+
+    ResponseEntity<PostMovieRatingResponse> postMovieRating(Integer movieId, RateMovieRequest request) throws IOException, InterruptedException;
+
 }

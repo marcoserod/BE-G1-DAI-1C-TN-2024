@@ -207,32 +207,4 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>(userService.updateUser(name, surname, nickname, file, userId), HttpStatus.OK);
     }
 
-    @Operation(summary = "It rates a film by a user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Film successfully rated."),
-            @ApiResponse(responseCode = "400", description = "Bad request.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "401", description = "Unauthorized.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "404", description = "Movie not found.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Internal server error.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) })
-    })
-    @PostMapping("/{userId}/ratings/{filmId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
-                                            @Valid @PathVariable(value = "filmId" ) Integer filmId,
-                                            @Parameter(name = "Authorization", description = "Bearer token",
-                                                    required = true, in = ParameterIn.HEADER,
-                                                    schema = @Schema(type = "string", format = "Bearer"))
-                                            @RequestHeader(name = "Authorization") String accessToken,
-                                            @RequestBody FilmRatingDto filmRatingDto)
-            throws IOException, InterruptedException {
-       return null;
-    }
 }
