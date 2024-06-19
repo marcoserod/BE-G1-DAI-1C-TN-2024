@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -116,7 +117,7 @@ public class UserControllerImpl implements UserController {
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken,
             @RequestParam(value = "page") Integer page) throws IOException, InterruptedException {
-        return new ResponseEntity<>(userService.getFavorites(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getFavorites(userId, page), HttpStatus.OK);
     }
 
     @Operation(summary = "It removes a movie from the user favorites")
