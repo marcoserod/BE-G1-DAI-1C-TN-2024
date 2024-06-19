@@ -1,8 +1,10 @@
 com\dai\dai\exception\handler\DaiExceptionHandler.class
+com\dai\dai\dto\movie\request\RateMovieRequest.class
 com\dai\dai\dto\auth\JwtResponse.class
 com\dai\dai\client\movie\dto\Celebrity.class
 com\dai\dai\exception\TmdbNotFoundException.class
 com\dai\dai\service\SessionService.class
+com\dai\dai\client\movie\dto\PostMovieRatingRequest$PostMovieRatingRequestBuilder.class
 com\dai\dai\client\movie\impl\MovieDbClientImpl.class
 com\dai\dai\dto\user\PostUsersResponse$PostUsersResponseBuilder.class
 com\dai\dai\BeG1Dai1CTn2024Application.class
@@ -47,6 +49,7 @@ com\dai\dai\client\movie\dto\MovieCast.class
 com\dai\dai\dto\movie\response\GetAvailableMovieGenresResponse.class
 com\dai\dai\dto\movie\response\GetAvailableMovieGenresResponse$GetAvailableMovieGenresResponseBuilder.class
 com\dai\dai\exception\InternalServerErrorException.class
+com\dai\dai\client\movie\dto\PostMovieRatingRequest.class
 com\dai\dai\service\impl\SessionServiceImpl.class
 com\dai\dai\client\movie\dto\GenresResponse.class
 com\dai\dai\client\movie\dto\ImageList$ImageListBuilder.class
@@ -65,6 +68,7 @@ com\dai\dai\client\movie\dto\Image.class
 com\dai\dai\dto\movie\response\GetMovieDetailsResponse$GetMovieDetailsResponseBuilder.class
 com\dai\dai\dto\movie\response\ListMetadata$ListMetadataBuilder.class
 com\dai\dai\dto\user\dto\UserDto$UserDtoBuilder.class
+com\dai\dai\client\movie\dto\PostMovieRatingResponse.class
 com\dai\dai\exception\DaiException$DaiExceptionBuilder.class
 com\dai\dai\exception\handler\ConflictException.class
 com\dai\dai\client\movie\MovieDbClient.class

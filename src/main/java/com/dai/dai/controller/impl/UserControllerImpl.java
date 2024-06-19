@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -116,7 +117,7 @@ public class UserControllerImpl implements UserController {
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken,
             @RequestParam(value = "page") Integer page) throws IOException, InterruptedException {
-        return new ResponseEntity<>(userService.getFavorites(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getFavorites(userId, page), HttpStatus.OK);
     }
 
     @Operation(summary = "It removes a movie from the user favorites")
@@ -207,32 +208,4 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>(userService.updateUser(name, surname, nickname, file, userId), HttpStatus.OK);
     }
 
-    @Operation(summary = "It rates a film by a user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Film successfully rated."),
-            @ApiResponse(responseCode = "400", description = "Bad request.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "401", description = "Unauthorized.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "404", description = "Movie not found.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) }),
-            @ApiResponse(responseCode = "500", description = "Internal server error.",
-                    content = { @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = DaiException.class)) })
-    })
-    @PostMapping("/{userId}/ratings/{filmId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addFavorite(@Valid @PathVariable(value = "userId" ) Integer userId,
-                                            @Valid @PathVariable(value = "filmId" ) Integer filmId,
-                                            @Parameter(name = "Authorization", description = "Bearer token",
-                                                    required = true, in = ParameterIn.HEADER,
-                                                    schema = @Schema(type = "string", format = "Bearer"))
-                                            @RequestHeader(name = "Authorization") String accessToken,
-                                            @RequestBody FilmRatingDto filmRatingDto)
-            throws IOException, InterruptedException {
-       return null;
-    }
 }

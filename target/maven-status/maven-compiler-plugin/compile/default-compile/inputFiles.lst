@@ -43,6 +43,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\BeG1Dai1CTn2024Application.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\handler\ConflictException.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\configuration\swagger\OpenApiConfig.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\PostMovieRatingResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\controller\UserController.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\service\UserService.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetAvailableMovieGenresResponse.java
@@ -50,8 +51,10 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\MovieDbClient.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetFavoriteMoviesResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\service\impl\SessionServiceImpl.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\PostMovieRatingRequest.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\repository\SessionRepository.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\ImageList.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\request\RateMovieRequest.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\controller\impl\AuthControllerImpl.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\InternalServerErrorException.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\auth\request\LogOutRequest.java
