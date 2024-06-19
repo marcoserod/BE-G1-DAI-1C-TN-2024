@@ -36,7 +36,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public GetMoviesResponse getNowPlaying(Integer page) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getNowPlaying init");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=es&page="+page))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=es-MX&page="+page))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -89,7 +89,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public GetMovieByIdResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getMovieById. Id: {}", movieId);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"?language=es"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"?language=es-MX"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -113,7 +113,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public List<Genre> getAvailableMovieGenres() throws IOException, InterruptedException {
         log.info("[MovieDbClient] getAvailableMovieGenres.");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/genre/movie/list?language=es"))
+                .uri(URI.create("https://api.themoviedb.org/3/genre/movie/list?language=es-MX"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -137,7 +137,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     @Override
     public MovieTrailer getMovieTrailerById(Integer movieId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/" + movieId + "/videos?language=es"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/" + movieId + "/videos?language=es-MX"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer " + accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -173,7 +173,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     @Override
     public MovieCast getMovieCastByMovieId(Integer movieId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"/credits?language=es"))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/"+movieId+"/credits?language=es-MX"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -197,7 +197,7 @@ public class MovieDbClientImpl implements MovieDbClient {
     public GetMoviesResponse getMoviesByName(String name) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.themoviedb.org/3/search/multi?query="+name+"&include_adult=false" +
-                        "&language=es&page=1"))
+                        "&language=es-MX&page=1"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -228,7 +228,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 log.info("Se van a recuperar peliculas asociadas al acrtor: {}.", movieListApiExt.getResults().get(0).getName());
                 var actorId = movieListApiExt.getResults().get(0).getId();
                 HttpRequest actorRequest = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es&include_adult=false&" +
+                        .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es-MX&include_adult=false&" +
                                 "page=1&with_cast="+actorId))
                         .header("accept", "application/json")
                         .header("Authorization", "Bearer "+accesToken)
@@ -246,7 +246,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 //Consultamos n veces tmdb para conseguir las n paginas que tienen de peliculas.
                 while (contadorPaginasTmbd <= totalPages ){
                     actorRequest = HttpRequest.newBuilder()
-                            .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es&page=" + contadorPaginasTmbd +
+                            .uri(URI.create("https://api.themoviedb.org/3/discover/movie?language=es-MX&page=" + contadorPaginasTmbd +
                                     "&with_cast="+actorId))
                             .header("accept", "application/json")
                             .header("Authorization", "Bearer "+accesToken)
@@ -292,7 +292,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 List<Movie> movieNameList = new ArrayList<>();
                 HttpRequest nameSearch = HttpRequest.newBuilder()
                         .uri(URI.create("https://api.themoviedb.org/3/search/movie?query=" +name+
-                                "&include_adult=false&language=es&page=1"))
+                                "&include_adult=false&language=es-MX&page=1"))
                         .header("accept", "application/json")
                         .header("Authorization", "Bearer "+accesToken)
                         .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -311,7 +311,7 @@ public class MovieDbClientImpl implements MovieDbClient {
                 while (contadorPaginasTmbd <= totalPages ){
                     var searchNameRequest = HttpRequest.newBuilder()
                             .uri(URI.create("https://api.themoviedb.org/3/search/movie?query="+name+"&include_adult=false" +
-                                    "&language=es&page="+contadorPaginasTmbd))
+                                    "&language=es-MX&page="+contadorPaginasTmbd))
                             .header("accept", "application/json")
                             .header("Authorization", "Bearer "+accesToken)
                             .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -365,7 +365,7 @@ public class MovieDbClientImpl implements MovieDbClient {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.themoviedb.org/3/movie/"+ movieId +
-                        "/images?include_image_language=es&language=es"))
+                        "/images?include_image_language=es-MX&language=es-MX"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
