@@ -26,4 +26,6 @@ public class GetMovieDetailsResponse {
     @Schema(description = "List od images.")
     ImageList imageList;
 
+    Integer userRating;
+
 }

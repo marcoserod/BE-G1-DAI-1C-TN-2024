@@ -1,25 +1,25 @@
 package com.dai.dai.service.impl;
 
 
-import com.cloudinary.api.exceptions.NotFound;
 import com.dai.dai.client.movie.dto.*;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
+import com.dai.dai.entity.UserMovieRatingEntity;
 import com.dai.dai.exception.SortCriteriaNotAllowedException;
 import com.dai.dai.exception.TmdbNotFoundException;
+import com.dai.dai.repository.UserMovieRatingRepository;
 import com.dai.dai.service.MovieService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -27,15 +27,16 @@ import java.util.stream.Collectors;
 @Service
 public class MovieServiceImpl implements MovieService {
 
-    MovieDbClientImpl movieDbClient;
     @Value("${movieplay.page.size}")
     Integer pageSize;
+    MovieDbClientImpl movieDbClient;
+    UserMovieRatingRepository userMovieRatingRepository;
 
-    public MovieServiceImpl(MovieDbClientImpl movieDbClient) {
+
+    public MovieServiceImpl(MovieDbClientImpl movieDbClient, UserMovieRatingRepository userMovieRatingRepository) {
         this.movieDbClient = movieDbClient;
+        this.userMovieRatingRepository = userMovieRatingRepository;
     }
-
-
 
     @Override
     public GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException {
@@ -46,12 +47,13 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException {
+    public GetMovieDetailsResponse getMovieById(Integer movieId, Long userId ) {
         log.info("[MovieService] Execution of the method getMovieById() has started. Id: {}.",movieId);
         GetMovieByIdResponse movieDetails = null;
         ImageList movieImages = null;
         MovieCast movieCast = null;
         MovieTrailer movieTrailer = null;
+        Integer userRating = null;
         List<Genre> genreList;
         try{
             movieDetails = movieDbClient.getMovieById(movieId);
@@ -76,8 +78,15 @@ public class MovieServiceImpl implements MovieService {
         } catch (Exception e) {
             log.error("No trailer found for the movie with ID: {}", movieId);
         }
+        try {
+            userRating = getUserMovieRating(userId, movieId.longValue()).getRating();
+        } catch (TmdbNotFoundException exception) {
+            log.info("Movie has no ratings by user.");
+        } catch (Exception e){
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
         log.info("[MovieService] Movie details for {} retrieved successfully.", movieDetails.getTitle());
-
 
         return GetMovieDetailsResponse.builder()
                 .movie(movieDetails)
@@ -85,6 +94,7 @@ public class MovieServiceImpl implements MovieService {
                 .movieTrailer(movieTrailer)
                 .imageList(movieImages)
                 .genreList(genreList)
+                .userRating(userRating)
                 .build();
     }
 
@@ -169,12 +179,22 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public PostMovieRatingResponse postMovieRating(Integer movieId, Integer rating) throws IOException, InterruptedException {
+    public PostMovieRatingResponse postMovieRating(Integer movieId, Integer rating, Long userId) throws IOException, InterruptedException {
         log.info("[MovieService] Execution of the method postMovieRating() has started.");
+        float tmdbRating = (rating * 2);
         PostMovieRatingRequest postMovieRatingRequest = PostMovieRatingRequest.builder()
-                .value(rating.floatValue())
+                .value(tmdbRating)
                 .build();
-        return movieDbClient.postMovieRating(movieId,postMovieRatingRequest);
+        var response = movieDbClient.postMovieRating(movieId,postMovieRatingRequest);
+
+        UserMovieRatingEntity userMovieRatingEntity = new UserMovieRatingEntity();
+        userMovieRatingEntity.setMovie_id(movieId.longValue());
+        userMovieRatingEntity.setUser_id(userId);
+        userMovieRatingEntity.setRating(rating);
+
+        saveUserMovieRating(userMovieRatingEntity);
+
+        return response;
     }
 
 
@@ -310,5 +330,28 @@ public class MovieServiceImpl implements MovieService {
                 .filter(movie -> movie.getGenres().stream()
                         .anyMatch(genre -> filters.contains(genre.toString())))
                 .collect(Collectors.toList());
+    }
+
+    private void saveUserMovieRating(UserMovieRatingEntity userMovieRatingEntity){
+        try {
+            userMovieRatingRepository.save(userMovieRatingEntity);
+        } catch (Exception e) {
+            log.error("Ocurrió un error al persistir el rating en la bbdd. Error: {}", e.getMessage());
+            throw new RuntimeException("Ocurrió un error al persistir el rating en la bbdd.");
+        }
+    }
+    private UserMovieRatingEntity getUserMovieRating(Long userId, Long filmId){
+        Optional<UserMovieRatingEntity> response;
+        try {
+            response = userMovieRatingRepository.getUserMovieRatingEntity(userId,filmId);
+        } catch (Exception e){
+            log.error("Ocurrió un error al recuperar el rating de la base de datos.");
+            throw new RuntimeException("Ocurrió un error al recuperar el rating de la base de datos.");
+        }
+        if (response.isPresent()){
+            return response.get();
+        } else {
+            throw new TmdbNotFoundException("No se encontró rating para la pelicula.");
+        }
     }
 }
