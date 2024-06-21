@@ -133,6 +133,9 @@ public class UserServiceImpl implements UserService {
             var listUsersFav = userFavoriteRepository.findByUserId(userID);
             for (UserFavoriteEntity favoriteFilm : listUsersFav) {
                var movie = movieService.getMovieById(Integer.valueOf(favoriteFilm.getFilm_id()));
+               if (movie.getGenreList()!= null) {
+                   movie.getMovie().setGenres(movie.getGenreList());
+               }
                movies.add(movie.getMovie());
             }
 
