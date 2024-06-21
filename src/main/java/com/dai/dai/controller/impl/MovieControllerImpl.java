@@ -152,7 +152,7 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
-    @PostMapping("/{movieId}/rate")
+    @PostMapping("/{movieId}/ratings")
     @Override
     public ResponseEntity<PostMovieRatingResponse> postMovieRating(
             @PathVariable(value = "movieId") Integer movieId,

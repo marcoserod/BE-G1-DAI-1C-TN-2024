@@ -4,9 +4,11 @@ package com.dai.dai.service.impl;
 import com.dai.dai.client.movie.dto.*;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
+import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.entity.UserMovieRatingEntity;
 import com.dai.dai.exception.SortCriteriaNotAllowedException;
 import com.dai.dai.exception.TmdbNotFoundException;
+import com.dai.dai.repository.UserFavoriteRepository;
 import com.dai.dai.repository.UserMovieRatingRepository;
 import com.dai.dai.service.MovieService;
 import lombok.AllArgsConstructor;
@@ -31,11 +33,12 @@ public class MovieServiceImpl implements MovieService {
     Integer pageSize;
     MovieDbClientImpl movieDbClient;
     UserMovieRatingRepository userMovieRatingRepository;
+    UserFavoriteRepository userFavoriteRepository;
 
-
-    public MovieServiceImpl(MovieDbClientImpl movieDbClient, UserMovieRatingRepository userMovieRatingRepository) {
+    public MovieServiceImpl(MovieDbClientImpl movieDbClient, UserMovieRatingRepository userMovieRatingRepository, UserFavoriteRepository userFavoriteRepository) {
         this.movieDbClient = movieDbClient;
         this.userMovieRatingRepository = userMovieRatingRepository;
+        this.userFavoriteRepository = userFavoriteRepository;
     }
 
     @Override
@@ -54,6 +57,7 @@ public class MovieServiceImpl implements MovieService {
         MovieCast movieCast = null;
         MovieTrailer movieTrailer = null;
         Integer userRating = null;
+        Boolean isUserFvorite;
         List<Genre> genreList;
         try{
             movieDetails = movieDbClient.getMovieById(movieId);
@@ -86,6 +90,7 @@ public class MovieServiceImpl implements MovieService {
             log.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+        isUserFvorite = isUserFavorite(userId.intValue(), movieId);
         log.info("[MovieService] Movie details for {} retrieved successfully.", movieDetails.getTitle());
 
         return GetMovieDetailsResponse.builder()
@@ -95,6 +100,7 @@ public class MovieServiceImpl implements MovieService {
                 .imageList(movieImages)
                 .genreList(genreList)
                 .userRating(userRating)
+                .isUserFavorite(isUserFvorite)
                 .build();
     }
 
@@ -352,6 +358,22 @@ public class MovieServiceImpl implements MovieService {
             return response.get();
         } else {
             throw new TmdbNotFoundException("No se encontró rating para la pelicula.");
+        }
+    }
+
+        private Boolean isUserFavorite(Integer userId, Integer filmId){
+
+        UserFavoriteEntity response;
+        try {
+            response = userFavoriteRepository.findByUserIdAndFilmId(userId, filmId);
+        } catch (Exception e){
+            log.error("Ocurrió un error al recuperar el rating de la base de datos.");
+            throw new RuntimeException("Ocurrió un error al recuperar el rating de la base de datos.");
+        }
+        if (null != response){
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
         }
     }
 }

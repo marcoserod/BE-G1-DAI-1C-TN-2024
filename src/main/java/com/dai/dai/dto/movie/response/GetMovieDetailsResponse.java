@@ -28,4 +28,6 @@ public class GetMovieDetailsResponse {
 
     Integer userRating;
 
+    Boolean isUserFavorite;
+
 }
