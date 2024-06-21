@@ -11,12 +11,12 @@ public interface MovieService {
 
     GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException;
 
-    GetMovieDetailsResponse getMovieById(Integer movieId) throws IOException, InterruptedException;
+    GetMovieDetailsResponse getMovieById(Integer movieId, Long userId) throws IOException, InterruptedException;
 
     GetAvailableMovieGenresResponse getAvailableMovieGenres() throws IOException, InterruptedException;
 
     GetMoviesResponse getMoviesByName(String name, String orderBy, Integer page, List<String> filters) throws IOException, InterruptedException;
 
-    PostMovieRatingResponse postMovieRating(Integer movieId, Integer request) throws IOException, InterruptedException;
+    PostMovieRatingResponse postMovieRating(Integer movieId, Integer request, Long userId) throws IOException, InterruptedException;
 
 }

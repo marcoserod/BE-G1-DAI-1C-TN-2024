@@ -1,11 +1,11 @@
 package com.dai.dai.controller.impl;
 
-import com.dai.dai.client.movie.dto.Movie;
 import com.dai.dai.client.movie.dto.PostMovieRatingResponse;
 import com.dai.dai.controller.MovieController;
 import com.dai.dai.dto.movie.request.RateMovieRequest;
 import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.exception.DaiException;
+import com.dai.dai.security.SecurityUtils;
 import com.dai.dai.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ import java.util.List;
 public class MovieControllerImpl implements MovieController {
 
     MovieService movieService;
+    SecurityUtils securityUtils;
 
     @Operation(summary = "It returns a list of movies currently in theaters.")
     @ApiResponses(value = {
@@ -80,7 +82,7 @@ public class MovieControllerImpl implements MovieController {
             @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.getMovieById(movieId), HttpStatus.OK);
+        return new ResponseEntity<>(movieService.getMovieById(movieId, securityUtils.getUserIdFromToken(accessToken)), HttpStatus.OK);
     }
 
     @Operation(summary = "It returns the available movie genres.")
@@ -150,9 +152,12 @@ public class MovieControllerImpl implements MovieController {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json", schema =
                     @Schema(implementation = DaiException.class))) })
-    @PostMapping("/{movieId}/rate")
+    @PostMapping("/{movieId}/ratings")
     @Override
-    public ResponseEntity<PostMovieRatingResponse> postMovieRating(@PathVariable(value = "movieId") Integer movieId, @RequestBody RateMovieRequest request) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.postMovieRating(movieId,request.getRating()), HttpStatus.OK);
+    public ResponseEntity<PostMovieRatingResponse> postMovieRating(
+            @PathVariable(value = "movieId") Integer movieId,
+            @RequestBody RateMovieRequest request,
+            @RequestHeader(name = "Authorization") String accessToken) throws IOException, InterruptedException {
+        return new ResponseEntity<>(movieService.postMovieRating(movieId,request.getRating(), securityUtils.getUserIdFromToken(accessToken) ), HttpStatus.OK);
     }
 }
