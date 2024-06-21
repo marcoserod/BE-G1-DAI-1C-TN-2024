@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             if (filmInFavorites == null) {
-                movieService.getMovieById(filmId);
+                movieService.getMovieById(filmId, userId.longValue());
                 var user = userOptional.get();
                 var userFavorite = new UserFavoriteEntity();
                 userFavorite.setFilm_id(filmId);
@@ -132,7 +132,10 @@ public class UserServiceImpl implements UserService {
         try {
             var listUsersFav = userFavoriteRepository.findByUserId(userID);
             for (UserFavoriteEntity favoriteFilm : listUsersFav) {
-               var movie = movieService.getMovieById(Integer.valueOf(favoriteFilm.getFilm_id()));
+               var movie = movieService.getMovieById(favoriteFilm.getFilm_id(), userID.longValue());
+               if (movie.getGenreList() != null) {
+                   movie.getMovie().setGenres(movie.getGenreList());
+               }
                movies.add(movie.getMovie());
             }
 

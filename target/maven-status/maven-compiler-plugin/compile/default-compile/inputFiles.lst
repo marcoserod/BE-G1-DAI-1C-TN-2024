@@ -12,6 +12,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\GetMovieByIdResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\service\impl\UserServiceImpl.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\controller\impl\UserControllerImpl.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\repository\UserMovieRatingRepository.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\user\dto\FilmRatingDto.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\Movie.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\handler\DaiExceptionHandler.java
@@ -20,6 +21,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\controller\MovieController.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\MovieTrailer.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\service\MovieService.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\entity\UserMovieRatingEntity.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\UnauthorizedException.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\security\JwtRequestFilter.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\entity\SessionEntity.java
@@ -39,6 +41,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\auth\request\AuthRequest.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\controller\impl\MovieControllerImpl.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\repository\UserRepository.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\security\SecurityUtils.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\auth\JwtResponse.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\BeG1Dai1CTn2024Application.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\handler\ConflictException.java
