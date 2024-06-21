@@ -22,6 +22,6 @@ public interface MovieController {
                                                       String accessToken)
             throws IOException, InterruptedException;
 
-    ResponseEntity<PostMovieRatingResponse> postMovieRating(Integer movieId, RateMovieRequest request) throws IOException, InterruptedException;
+    ResponseEntity<PostMovieRatingResponse> postMovieRating(Integer movieId, RateMovieRequest request, String accessToken) throws IOException, InterruptedException;
 
 }

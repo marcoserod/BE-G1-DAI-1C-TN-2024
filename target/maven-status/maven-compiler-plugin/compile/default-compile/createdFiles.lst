@@ -17,6 +17,7 @@ com\dai\dai\dto\user\dto\UserEditDto$UserEditDtoBuilder.class
 com\dai\dai\client\movie\dto\ImageList.class
 com\dai\dai\service\MovieService.class
 com\dai\dai\exception\UnauthorizedException.class
+com\dai\dai\repository\UserMovieRatingRepository.class
 com\dai\dai\dto\movie\response\GetFavoriteMoviesResponse.class
 com\dai\dai\controller\impl\MovieControllerImpl.class
 com\dai\dai\controller\impl\AuthControllerImpl.class
@@ -61,12 +62,14 @@ com\dai\dai\client\movie\dto\Movie.class
 com\dai\dai\entity\UserFavoriteEntity.class
 com\dai\dai\dto\user\dto\FilmRatingDto$FilmRatingDtoBuilder.class
 com\dai\dai\service\impl\MovieServiceImpl$2.class
+com\dai\dai\entity\UserMovieRatingEntity.class
 com\dai\dai\configuration\swagger\OpenApiConfig.class
 com\dai\dai\service\impl\MovieServiceImpl.class
 com\dai\dai\dto\movie\response\ListMetadata.class
 com\dai\dai\client\movie\dto\Image.class
 com\dai\dai\dto\movie\response\GetMovieDetailsResponse$GetMovieDetailsResponseBuilder.class
 com\dai\dai\dto\movie\response\ListMetadata$ListMetadataBuilder.class
+com\dai\dai\security\SecurityUtils.class
 com\dai\dai\dto\user\dto\UserDto$UserDtoBuilder.class
 com\dai\dai\client\movie\dto\PostMovieRatingResponse.class
 com\dai\dai\exception\DaiException$DaiExceptionBuilder.class
