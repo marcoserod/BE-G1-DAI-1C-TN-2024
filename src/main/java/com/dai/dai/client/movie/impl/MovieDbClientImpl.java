@@ -365,7 +365,7 @@ public class MovieDbClientImpl implements MovieDbClient {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.themoviedb.org/3/movie/"+ movieId +
-                        "/images?include_image_language=es-MX&language=es-MX"))
+                        "/images?include_image_language=es&language=es-MX"))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
