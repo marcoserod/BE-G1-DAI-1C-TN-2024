@@ -193,12 +193,20 @@ public class MovieServiceImpl implements MovieService {
                 .build();
         var response = movieDbClient.postMovieRating(movieId,postMovieRatingRequest);
 
-        UserMovieRatingEntity userMovieRatingEntity = new UserMovieRatingEntity();
-        userMovieRatingEntity.setMovie_id(movieId.longValue());
-        userMovieRatingEntity.setUser_id(userId);
-        userMovieRatingEntity.setRating(rating);
+        var userMovieRating = userMovieRatingRepository.getUserMovieRatingEntity(userId, movieId.longValue());
+        if (userMovieRating.isEmpty()){
+            UserMovieRatingEntity userMovieRatingEntity = new UserMovieRatingEntity();
+            userMovieRatingEntity.setMovie_id(movieId.longValue());
+            userMovieRatingEntity.setUser_id(userId);
+            userMovieRatingEntity.setRating(rating);
+            saveUserMovieRating(userMovieRatingEntity);
+        } else {
+            log.info("Updating movie rating...");
+            userMovieRating.get().setRating(rating);
+            log.info("New Movie Rating: {}", userMovieRating.get().getRating());
+            saveUserMovieRating(userMovieRating.get());
+        }
 
-        saveUserMovieRating(userMovieRatingEntity);
 
         return response;
     }
@@ -346,6 +354,7 @@ public class MovieServiceImpl implements MovieService {
             throw new RuntimeException("Ocurrió un error al persistir el rating en la bbdd.");
         }
     }
+
     private UserMovieRatingEntity getUserMovieRating(Long userId, Long filmId){
         Optional<UserMovieRatingEntity> response;
         try {
