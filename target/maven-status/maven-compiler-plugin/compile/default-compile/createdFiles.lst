@@ -12,6 +12,7 @@ com\dai\dai\controller\UserController.class
 com\dai\dai\service\impl\MovieServiceImpl$1.class
 com\dai\dai\client\movie\dto\Movies.class
 com\dai\dai\service\impl\MovieServiceImpl$4.class
+com\dai\dai\configuration\cors\WebConfig$1.class
 com\dai\dai\converter\user\UserConverter.class
 com\dai\dai\dto\user\dto\UserEditDto$UserEditDtoBuilder.class
 com\dai\dai\client\movie\dto\ImageList.class
@@ -21,6 +22,7 @@ com\dai\dai\repository\UserMovieRatingRepository.class
 com\dai\dai\dto\movie\response\GetFavoriteMoviesResponse.class
 com\dai\dai\controller\impl\MovieControllerImpl.class
 com\dai\dai\controller\impl\AuthControllerImpl.class
+com\dai\dai\configuration\cors\WebConfig.class
 com\dai\dai\controller\AuthController.class
 com\dai\dai\client\movie\dto\Genre.class
 com\dai\dai\dto\auth\request\RefreshTokenRequest.class
