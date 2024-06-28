@@ -66,6 +66,7 @@ com\dai\dai\dto\user\dto\FilmRatingDto$FilmRatingDtoBuilder.class
 com\dai\dai\service\impl\MovieServiceImpl$2.class
 com\dai\dai\entity\UserMovieRatingEntity.class
 com\dai\dai\configuration\swagger\OpenApiConfig.class
+com\dai\dai\service\impl\UserServiceImpl$1.class
 com\dai\dai\service\impl\MovieServiceImpl.class
 com\dai\dai\dto\movie\response\ListMetadata.class
 com\dai\dai\client\movie\dto\Image.class
