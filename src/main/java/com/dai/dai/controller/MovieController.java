@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface MovieController {
-    ResponseEntity<GetMoviesResponse> getNowPlayingMovies(Integer page, String accessToken)
+    ResponseEntity<GetMoviesResponse> getNowPlayingMovies(Integer page, String region, String accessToken)
             throws IOException, InterruptedException;
     ResponseEntity<GetMovieDetailsResponse> getMovieById(Integer movieId, String accessToken)
             throws IOException, InterruptedException;
