@@ -42,9 +42,9 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException {
+    public GetMoviesResponse getNowPlayingMovies(Integer page, String region) throws IOException, InterruptedException {
         log.info("[MovieService] Execution of the method getNowPlayingMovies() has started.");
-        var response = movieDbClient.getNowPlaying(page);
+        var response = movieDbClient.getNowPlaying(page, region);
         log.info("[MovieService] Movies retrieved successfully. Number of movies: {}.", response.getMovies().size());
         return response;
     }

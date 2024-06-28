@@ -51,11 +51,12 @@ public class MovieControllerImpl implements MovieController {
     @Override
     public ResponseEntity<GetMoviesResponse> getNowPlayingMovies(
             @RequestParam(value = "page") Integer page,
+            @RequestParam(value = "region") String region,
             @Parameter(name = "Authorization", description = "Bearer token", required = true, in = ParameterIn.HEADER,
                     schema = @Schema(type = "string", format = "Bearer"))
             @RequestHeader(name = "Authorization") String accessToken
     ) throws IOException, InterruptedException {
-        return new ResponseEntity<>(movieService.getNowPlayingMovies(page), HttpStatus.OK);
+        return new ResponseEntity<>(movieService.getNowPlayingMovies(page, region), HttpStatus.OK);
     }
 
     @Operation(summary = "It returns the details of the requested movie.")
