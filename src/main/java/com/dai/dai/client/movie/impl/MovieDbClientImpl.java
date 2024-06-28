@@ -33,10 +33,11 @@ public class MovieDbClientImpl implements MovieDbClient {
 
 
     @Override
-    public GetMoviesResponse getNowPlaying(Integer page) throws IOException, InterruptedException {
+    public GetMoviesResponse getNowPlaying(Integer page, String region) throws IOException, InterruptedException {
         log.info("[MovieDbClient] getNowPlaying init");
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=es-MX&page="+page))
+                .uri(URI.create("https://api.themoviedb.org/3/movie/now_playing?language=es-MX&page="+page
+                        + "&region=" + region))
                 .header("accept", "application/json")
                 .header("Authorization", "Bearer "+accesToken)
                 .method("GET", HttpRequest.BodyPublishers.noBody())

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -138,6 +140,9 @@ public class UserServiceImpl implements UserService {
                }
                movies.add(movie.getMovie());
             }
+
+            //Se ordenan las peliculas fecha descendente y desempata el rating descendente.
+            sortMoviesByReleaseDateDescendingAndRatingDescending(movies);
 
             int totalPages = (int) Math.ceil((float) movies.size() / pageSize);
 
@@ -297,5 +302,34 @@ public class UserServiceImpl implements UserService {
 
         var userUpdated = userRepository.save(user);
         return UserConverter.fromUserEntityToUserDto(userUpdated);
+    }
+
+    private void sortMoviesByReleaseDateDescendingAndRatingDescending(List<GetMovieByIdResponse> list) {
+        list.sort(new Comparator<GetMovieByIdResponse>() {
+            @Override
+            public int compare(GetMovieByIdResponse movie1, GetMovieByIdResponse movie2) {
+                Date date1 = parseReleaseDate(movie1.getRelease_date());
+                Date date2 = parseReleaseDate(movie2.getRelease_date());
+                int releaseDateComparison = date2.compareTo(date1); // Reverse order for descending
+
+                if (releaseDateComparison == 0) {
+                    Double rating1 = movie1.getVote_average();
+                    Double rating2 = movie2.getVote_average();
+                    return rating2.compareTo(rating1); // Reverse order for descending
+                }
+
+                return releaseDateComparison;
+            }
+        });
+    }
+
+    private static Date parseReleaseDate(String releaseDateStr) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy"); // Ajusta el formato según sea necesario
+        try {
+            return format.parse(releaseDateStr);
+        } catch (ParseException e) {
+            // Maneja la excepción de análisis (por ejemplo, registra el error, devuelve null)
+            throw new RuntimeException("Error parsing release date: " + releaseDateStr, e);
+        }
     }
 }
