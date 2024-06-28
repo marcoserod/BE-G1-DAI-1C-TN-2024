@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MovieService {
 
-    GetMoviesResponse getNowPlayingMovies(Integer page) throws IOException, InterruptedException;
+    GetMoviesResponse getNowPlayingMovies(Integer page, String region) throws IOException, InterruptedException;
 
     GetMovieDetailsResponse getMovieById(Integer movieId, Long userId) throws IOException, InterruptedException;
 
