@@ -15,6 +15,7 @@ C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\repository\UserMovieRatingRepository.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\user\dto\FilmRatingDto.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\client\movie\dto\Movie.java
+C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\configuration\transactional\AppConfig.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\handler\DaiExceptionHandler.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\dto\movie\response\ListMetadata.java
 C:\Users\Juan\Mi unidad\facultad\aplicaciones distribuidas\TPO\src\main\java\com\dai\dai\exception\TmdbNotFoundException.java

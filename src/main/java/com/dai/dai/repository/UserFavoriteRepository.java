@@ -1,5 +1,6 @@
 package com.dai.dai.repository;
 
+import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,7 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavoriteEntity
     @Transactional
     @Query(value = "SELECT * FROM user_favorites WHERE user_id = :userId AND film_id = :filmId", nativeQuery = true)
     UserFavoriteEntity findByUserIdAndFilmId (Integer userId, Integer filmId);
+
+    void deleteByUser(UserEntity user);
+
 }

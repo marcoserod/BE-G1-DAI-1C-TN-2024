@@ -6,18 +6,22 @@ import com.dai.dai.dto.movie.response.*;
 import com.dai.dai.dto.user.dto.UserDto;
 import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
+import com.dai.dai.entity.UserMovieRatingEntity;
 import com.dai.dai.exception.TmdbNotFoundException;
 import com.dai.dai.exception.handler.ConflictException;
 import com.dai.dai.repository.SessionRepository;
 import com.dai.dai.repository.UserFavoriteRepository;
+import com.dai.dai.repository.UserMovieRatingRepository;
 import com.dai.dai.repository.UserRepository;
 import com.dai.dai.service.MovieService;
 import com.dai.dai.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -36,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final UserFavoriteRepository userFavoriteRepository;
+    private final UserMovieRatingRepository userMovieRatingRepository;
     private final MovieService movieService;
     private final  CloudinaryServiceImpl cloudinaryService;
 
@@ -133,6 +138,8 @@ public class UserServiceImpl implements UserService {
 
         try {
             var listUsersFav = userFavoriteRepository.findByUserId(userID);
+            //Se ordenan las peliculas fecha descendente y desempata el rating descendente.
+            sortUserFavoritesByUpdatedAtDescending(listUsersFav);
             for (UserFavoriteEntity favoriteFilm : listUsersFav) {
                var movie = movieService.getMovieById(favoriteFilm.getFilm_id(), userID.longValue());
                if (movie.getGenreList() != null) {
@@ -141,8 +148,7 @@ public class UserServiceImpl implements UserService {
                movies.add(movie.getMovie());
             }
 
-            //Se ordenan las peliculas fecha descendente y desempata el rating descendente.
-            sortMoviesByReleaseDateDescendingAndRatingDescending(movies);
+
 
             int totalPages = (int) Math.ceil((float) movies.size() / pageSize);
 
@@ -220,6 +226,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public void removeUser(Integer userID) throws IOException, InterruptedException {
         log.info("Deleting the user with ID: {}", userID);
@@ -230,30 +237,20 @@ public class UserServiceImpl implements UserService {
               log.error("The requested user was not found.");
               throw new TmdbNotFoundException("The requested user was not found..");
           }
+            log.info("[removeUser] Deleting userMovieRating... ");
+            userMovieRatingRepository.deleteByUser(user.get());
+            log.info("[removeUser] Deleting userFavorite... ");
+            userFavoriteRepository.deleteByUser(user.get());
+            log.info("[removeUser] Deleting session... ");
+            sessionRepository.deleteByUserEmail(user.get().getEmail());
+            log.info("[removeUser] Deleting user... ");
+            userRepository.delete(user.get());
+            log.info("[removeUser] Delete completed successfully.");
         } catch (Exception e){
             log.error("There was an error while searching for the user in the database.");
             throw new RuntimeException("There was an error while searching for the user in the database.");
         }
-        try {
-            log.info("Deleting session...");
-            var session = sessionRepository.findByUserEmail(user.get().getEmail());
-            if (session.isEmpty()){
-                log.error("The session you want to delete was not found.");
-                throw new TmdbNotFoundException("The session you want to delete was not found.");
-            }
-            sessionRepository.deleteById(session.get().getId());
-            log.info("The user's session was successfully deleted.");
-        } catch (Exception e){
-            log.error("An error occurred while deleting the user's session.");
-            throw new RuntimeException("An error occurred while deleting the user's session.");
-        }
-        try {
-            userRepository.deleteById(userID);
-            log.info("The user was successfully deleted.");
-        } catch (Exception e){
-            log.error("An error occurred while deleting the user.");
-            throw new RuntimeException("An error occurred while deleting the user.");
-        }
+
     }
 
     @Override
@@ -304,32 +301,9 @@ public class UserServiceImpl implements UserService {
         return UserConverter.fromUserEntityToUserDto(userUpdated);
     }
 
-    private void sortMoviesByReleaseDateDescendingAndRatingDescending(List<GetMovieByIdResponse> list) {
-        list.sort(new Comparator<GetMovieByIdResponse>() {
-            @Override
-            public int compare(GetMovieByIdResponse movie1, GetMovieByIdResponse movie2) {
-                Date date1 = parseReleaseDate(movie1.getRelease_date());
-                Date date2 = parseReleaseDate(movie2.getRelease_date());
-                int releaseDateComparison = date2.compareTo(date1); // Reverse order for descending
-
-                if (releaseDateComparison == 0) {
-                    Double rating1 = movie1.getVote_average();
-                    Double rating2 = movie2.getVote_average();
-                    return rating2.compareTo(rating1); // Reverse order for descending
-                }
-
-                return releaseDateComparison;
-            }
-        });
+    private void sortUserFavoritesByUpdatedAtDescending(List<UserFavoriteEntity> userFavorites) {
+        userFavorites.sort(Comparator.comparing(UserFavoriteEntity::getUpdatedAt).reversed());
     }
 
-    private static Date parseReleaseDate(String releaseDateStr) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy"); // Ajusta el formato según sea necesario
-        try {
-            return format.parse(releaseDateStr);
-        } catch (ParseException e) {
-            // Maneja la excepción de análisis (por ejemplo, registra el error, devuelve null)
-            throw new RuntimeException("Error parsing release date: " + releaseDateStr, e);
-        }
-    }
+
 }
