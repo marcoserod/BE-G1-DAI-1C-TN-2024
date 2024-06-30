@@ -4,18 +4,21 @@ package com.dai.dai.service.impl;
 import com.dai.dai.client.movie.dto.*;
 import com.dai.dai.client.movie.impl.MovieDbClientImpl;
 import com.dai.dai.dto.movie.response.*;
+import com.dai.dai.entity.UserEntity;
 import com.dai.dai.entity.UserFavoriteEntity;
 import com.dai.dai.entity.UserMovieRatingEntity;
 import com.dai.dai.exception.SortCriteriaNotAllowedException;
 import com.dai.dai.exception.TmdbNotFoundException;
 import com.dai.dai.repository.UserFavoriteRepository;
 import com.dai.dai.repository.UserMovieRatingRepository;
+import com.dai.dai.repository.UserRepository;
 import com.dai.dai.service.MovieService;
-import lombok.AllArgsConstructor;
+import com.dai.dai.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -32,11 +35,14 @@ public class MovieServiceImpl implements MovieService {
     @Value("${movieplay.page.size}")
     Integer pageSize;
     MovieDbClientImpl movieDbClient;
+    UserRepository userRepository;
     UserMovieRatingRepository userMovieRatingRepository;
     UserFavoriteRepository userFavoriteRepository;
 
-    public MovieServiceImpl(MovieDbClientImpl movieDbClient, UserMovieRatingRepository userMovieRatingRepository, UserFavoriteRepository userFavoriteRepository) {
+
+    public MovieServiceImpl(MovieDbClientImpl movieDbClient, UserRepository userRepository, UserMovieRatingRepository userMovieRatingRepository, UserFavoriteRepository userFavoriteRepository) {
         this.movieDbClient = movieDbClient;
+        this.userRepository = userRepository;
         this.userMovieRatingRepository = userMovieRatingRepository;
         this.userFavoriteRepository = userFavoriteRepository;
     }
@@ -194,10 +200,22 @@ public class MovieServiceImpl implements MovieService {
         var response = movieDbClient.postMovieRating(movieId,postMovieRatingRequest);
 
         var userMovieRating = userMovieRatingRepository.getUserMovieRatingEntity(userId, movieId.longValue());
+
+        Optional<UserEntity> user;
         if (userMovieRating.isEmpty()){
+            try{
+                user = userRepository.findById(userId.intValue());
+                if (user.isEmpty()){
+                    log.error("User not found.");
+                    throw new TmdbNotFoundException("User not found");
+                }
+            } catch (Exception e) {
+                log.error("An error occurred while consulting the database.");
+                throw new RuntimeException("An error occurred while consulting the database.");
+            }
             UserMovieRatingEntity userMovieRatingEntity = new UserMovieRatingEntity();
             userMovieRatingEntity.setMovie_id(movieId.longValue());
-            userMovieRatingEntity.setUser_id(userId);
+            userMovieRatingEntity.setUser(user.get());
             userMovieRatingEntity.setRating(rating);
             saveUserMovieRating(userMovieRatingEntity);
         } else {
@@ -206,7 +224,6 @@ public class MovieServiceImpl implements MovieService {
             log.info("New Movie Rating: {}", userMovieRating.get().getRating());
             saveUserMovieRating(userMovieRating.get());
         }
-
 
         return response;
     }
